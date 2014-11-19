@@ -1,0 +1,7 @@
+<resources>
+    <declare-styleable name="CustomGLView">
+        <attr name="color" format="color" />
+        <attr name="full_screen" format="boolean"/>
+        <attr name="size" format="integer"/>
+    </declare-styleable>
+</resources>
