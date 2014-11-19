@@ -13,7 +13,7 @@ import java.util.List;
 public abstract class Drawable {
 
     //The size of the shape, this may need to be generated from the vertices or something
-    protected int mSize;
+    protected float mSize = .1f;
 
     //The shader type for this shape
     protected ShaderType mShaderType;

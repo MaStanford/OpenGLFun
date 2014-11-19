@@ -15,16 +15,22 @@ public class Triangle extends Drawable {
 
     private static final String TAG = "Triangle";
 
-    float shapeCoords[] = {   // in counterclockwise order:
-            0.0f,  0.622008459f, 0.0f, // top
-            -0.5f, -0.311004243f, 0.0f, // bottom left
-            0.5f, -0.311004243f, 0.0f  // bottom right
-    };
+    float shapeCoords[] = new float[]
+            {
+            //       X           Y              Z          Triangle 1
+                    (0),        (0),           (0.0f),  // top
+                    (0),        (0-mSize),     (0.0f),  // bottom left
+                    (0+mSize),  (0-mSize),     (0.0f),  // bottom right
+                                                        // Triangle 2
+                    (0),        (0),           (0.0f),  // top
+                    (0+mSize),  (0-mSize),     (0.0f),  // bottom left
+                    (0),        (0+mSize),     (0.0f)   // bottom right
+            };
 
     public Triangle(float x, float y) {
 
         /**
-         * Here is where we will load and compile the shaders
+         * Here is where we will load and compile the shaders for now. This should be somewhere else tho
          */
         new ShaderHelper().compileAndLoadShader();
 
@@ -71,7 +77,7 @@ public class Triangle extends Drawable {
         GLES20.glUniform4fv(mColorHandle, 1, color, 0);
 
         // Draw the triangle
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 9);
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 6);
 
         // Disable vertex array
         GLES20.glDisableVertexAttribArray(mPositionHandle);
@@ -86,10 +92,14 @@ public class Triangle extends Drawable {
     protected void generateNewVertices(float x, float y){
         this.shapeCoords = new float[]
                 {
-                //       X           Y              Z
+                //       X           Y              Z          Triangle 1
                         (x),        (y),           (0.0f),  // top
-                        (x -.01f),  (y - 0.1f),    (0.0f),  // bottom left
-                        (x +.01f),  (y - 0.1f),    (0.0f)   // bottom right
+                        (x),        (y-mSize),     (0.0f),  // bottom left
+                        (x+mSize),  (y-mSize),     (0.0f),  // bottom right
+                                                            // Triangle 2
+                        (x),        (y),           (0.0f),  // top
+                        (x+mSize),  (y-mSize),     (0.0f),  // bottom left
+                        (x+mSize),  (y),           (0.0f)   // bottom right
                 };
     }
 }

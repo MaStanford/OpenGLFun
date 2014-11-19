@@ -21,9 +21,9 @@ public class ShaderHelper {
      */
     private final String vertexShaderCode =
             "attribute vec4 vPosition;" +
-                    "void main() {" +
-                    "  gl_Position = vPosition;" +
-                    "}";
+            "void main() {" +
+            "  gl_Position = vPosition;" +
+            "}";
 
     private final String fragmentShaderCode =
             "precision mediump float;" +
@@ -68,6 +68,16 @@ public class ShaderHelper {
 
         return shader;
     }
+
+//    public static int compileVertexShader(String shaderCode) {
+//        return compileShader(GL_VERTEX_SHADER, shaderCode);
+//    }
+//    public static int compileFragmentShader(String shaderCode) {
+//        return compileShader(GL_FRAGMENT_SHADER, shaderCode);
+//    }
+//    private static int compileShader(int type, String shaderCode) {
+//
+//    }
 
 
 }

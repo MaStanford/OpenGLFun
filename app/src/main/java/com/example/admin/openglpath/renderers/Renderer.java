@@ -78,8 +78,6 @@ public class Renderer implements GLSurfaceView.Renderer {
         glClear(GL_COLOR_BUFFER_BIT);
 
         new Triangle(0,0).draw();
-        new Triangle(-.5f,-.5f).draw();
-        new Triangle(.5f,.5f).draw();
 
         //Iterate through the drawableList
         for (Drawable drawable : drawableList) {

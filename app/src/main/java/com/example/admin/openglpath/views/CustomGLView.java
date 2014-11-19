@@ -64,10 +64,6 @@ public class CustomGLView extends GLSurfaceView {
 
         //Set up data structure
         squareList =  new ArrayList<Drawable>();
-        squareList.add(new Triangle(0,-.31f));
-        squareList.add(new Triangle(.5f,-.31f));
-        squareList.add(new Triangle(-.5f,-.31f));
-
 
         //Set the context
         setEGLContextClientVersion(2);
