@@ -1,7 +1,9 @@
 package com.example.admin.openglpath.shapes;
 
+import android.graphics.Color;
 import android.opengl.GLES20;
 
+import com.example.admin.openglpath.util.ColorUtil;
 import com.example.admin.openglpath.util.ShaderHelper;
 import com.example.admin.openglpath.util.ShaderType;
 
@@ -27,16 +29,18 @@ public class Card extends Drawable {
                     (0),        (0+mSize),     (0.0f)   // bottom right
             };
 
-    public Card(float x, float y) {
+    public Card(float x, float y, int color) {
 
         /**
          * Here is where we will load and compile the shaders for now. This should be somewhere else tho
          */
         new ShaderHelper().compileAndLoadShader();
 
+        mColor = ColorUtil.getRGBAFromInt(color);
+
         //Get the shader for this shape and the program id where the shader is loaded
         mShaderType = ShaderType.Triangle;
-        mProgram = ShaderHelper.compiledShaders.get(this.mShaderType);
+        mProgram = ShaderHelper.compiledShaders.get(mShaderType);
 
         //Generating the vertices using the x,y
         generateNewVertices(x,y);
@@ -73,8 +77,8 @@ public class Card extends Drawable {
         // get handle to fragment shader's vColor member
         mColorHandle = GLES20.glGetUniformLocation(mProgram, "vColor");
 
-        // Set color for drawing the triangle
-        GLES20.glUniform4fv(mColorHandle, 1, color, 0);
+        // Set mColor for drawing the triangle
+        GLES20.glUniform4fv(mColorHandle, 1, mColor, 0);
 
         // Draw the triangle
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 6);
@@ -102,4 +106,6 @@ public class Card extends Drawable {
                         (x+mSize),  (y),           (0.0f)   // bottom right
                 };
     }
+
+
 }

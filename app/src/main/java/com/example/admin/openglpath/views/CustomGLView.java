@@ -22,7 +22,8 @@ public class CustomGLView extends GLSurfaceView {
     public static final String TAG = "CustomGLView";
 
     //Attr from xml
-    int mColor;
+    int mBackGroundColor;
+    int mShapeColor;
     boolean mIsFullScreen;
     int mSize;
 
@@ -38,7 +39,8 @@ public class CustomGLView extends GLSurfaceView {
     public CustomGLView(Context context) {
         super(context);
         //Need to set colors first
-        mColor = Color.DKGRAY;
+        mBackGroundColor = Color.DKGRAY;
+        mShapeColor = Color.CYAN;
         mSize = 24;
 
         setupOpenGL();
@@ -50,9 +52,10 @@ public class CustomGLView extends GLSurfaceView {
         //Get the attr from the xml
         TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.CustomGLView, 0, 0);
         try {
-            mColor = a.getColor(R.styleable.CustomGLView_color, Color.DKGRAY);
+            mBackGroundColor = a.getColor(R.styleable.CustomGLView_color_bg, Color.DKGRAY);
             mIsFullScreen = a.getBoolean(R.styleable.CustomGLView_full_screen, false);
             mSize = a.getInteger(R.styleable.CustomGLView_size, 24);
+            mShapeColor = a.getColor(R.styleable.CustomGLView_color_shape, Color.BLUE);
         }finally{
             a.recycle();
         }
@@ -72,7 +75,7 @@ public class CustomGLView extends GLSurfaceView {
         setFocusableInTouchMode(true);
 
         //Initialize the renderer
-        mRenderer = new com.example.admin.openglpath.renderers.Renderer(mColor , new ArrayList<Drawable>());
+        mRenderer = new com.example.admin.openglpath.renderers.Renderer(mBackGroundColor, new ArrayList<Drawable>());
 
         // Set the Renderer for drawing on the GLSurfaceView
         setRenderer(mRenderer);
@@ -90,7 +93,7 @@ public class CustomGLView extends GLSurfaceView {
                 float scaled[] = ViewUtils.scaleTouchEvent(view, motionEvent.getX(), motionEvent.getY(), 2);
                 x = scaled[0];
                 y = scaled[1];
-                mRenderer.addShape(new Card(x, y));
+                mRenderer.addShape(new Card(x, y, mShapeColor));
                 Log.d(TAG, "onTouch detected: " + x + ":" + y);
                 return false;
             }

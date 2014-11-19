@@ -5,14 +5,13 @@ import android.util.Log;
 import com.example.admin.openglpath.util.ShaderType;
 
 import java.nio.FloatBuffer;
-import java.util.List;
 
 /**
  * Created by Mark Stanford on 11/18/14.
  */
 public abstract class Drawable {
 
-    //The size of the shape, this may need to be generated from the vertices or something
+    //The size of the shape
     protected float mSize = .1f;
 
     //The shader type for this shape
@@ -27,8 +26,8 @@ public abstract class Drawable {
     //The coordinates of the drawable
     protected float[] shapeCoords;
 
-    // Set color with red, green, blue and alpha (opacity) values
-    protected float color[] = { 0.63671875f, 0.76953125f, 0.22265625f, 1.0f };
+    // Set mColor with red, green, blue and alpha (opacity) values
+    protected float mColor[] = { 0.63671875f, 0.76953125f, 0.22265625f, 1.0f };
 
     //handle to vertex shader's vPosition member
     protected int mPositionHandle;
@@ -63,5 +62,13 @@ public abstract class Drawable {
      */
     protected void generateNewVertices(float x, float y){
 
+    }
+
+    public float[] getmColor() {
+        return mColor;
+    }
+
+    public void setmColor(float[] mColor) {
+        this.mColor = mColor;
     }
 }

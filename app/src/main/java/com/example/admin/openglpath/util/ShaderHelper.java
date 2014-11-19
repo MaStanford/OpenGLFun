@@ -1,7 +1,6 @@
 package com.example.admin.openglpath.util;
 
 import android.opengl.GLES20;
-import android.util.Log;
 
 import java.util.HashMap;
 import java.util.Map;

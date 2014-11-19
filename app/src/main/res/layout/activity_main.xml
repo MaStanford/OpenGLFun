@@ -13,6 +13,7 @@
         android:id="@+id/gl_main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        CustomGLView:color="@android:color/holo_orange_light"/>
+        CustomGLView:color_bg="@android:color/black"
+        CustomGLView:color_shape="@android:color/holo_red_dark"/>
 
 </RelativeLayout>

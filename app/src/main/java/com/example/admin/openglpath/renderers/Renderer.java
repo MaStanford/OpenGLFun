@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.example.admin.openglpath.shapes.Card;
 import com.example.admin.openglpath.shapes.Drawable;
+import com.example.admin.openglpath.util.ColorUtil;
 
 import java.util.List;
 
@@ -46,24 +47,12 @@ public class Renderer implements GLSurfaceView.Renderer {
     }
 
     /**
-     * Clears the screen with the color specified in the xml
+     * Clears the screen with the mColor specified in the xml
      */
     public void clearColor() {
-        float b = ((mColor) & 0xFF);
-        float g = ((mColor >> 8) & 0xFF);
-        float r = ((mColor >> 16) & 0xFF);
-        float a = ((mColor >> 24) & 0xFF);
+        float[] color = ColorUtil.getRGBAFromInt(mColor);
 
-        Log.d(TAG, String.format("R: %f G: %f B: %f A: %f", r, g, b, a));
-
-        b = ((mColor) & 0xFF) / 255.0f;
-        g = ((mColor >> 8) & 0xFF) / 255.0f;
-        r = ((mColor >> 16) & 0xFF) / 255.0f;
-        a = ((mColor >> 24) & 0xFF) / 255.0f;
-
-        Log.d(TAG, String.format("R: %f G: %f B: %f A: %f", r, g, b, a));
-
-        glClearColor(r, g, b, a);
+        glClearColor(color[0], color[1], color[2], color[3]);
     }
 
     @Override
@@ -77,7 +66,7 @@ public class Renderer implements GLSurfaceView.Renderer {
         // Clear the rendering surface.
         glClear(GL_COLOR_BUFFER_BIT);
 
-        new Card(0,0).draw();
+        new Card(0,0,35).draw();
 
         //Iterate through the drawableList
         for (Drawable drawable : drawableList) {
