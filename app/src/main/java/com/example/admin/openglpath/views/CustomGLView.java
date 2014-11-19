@@ -11,8 +11,8 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.example.admin.openglpath.R;
+import com.example.admin.openglpath.shapes.Card;
 import com.example.admin.openglpath.shapes.Drawable;
-import com.example.admin.openglpath.shapes.Triangle;
 import com.example.admin.openglpath.util.ViewUtils;
 
 import java.util.ArrayList;
@@ -86,11 +86,11 @@ public class CustomGLView extends GLSurfaceView {
         setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                float x,y;
+                float x, y;
                 float scaled[] = ViewUtils.scaleTouchEvent(view, motionEvent.getX(), motionEvent.getY(), 2);
                 x = scaled[0];
                 y = scaled[1];
-                mRenderer.addShape(new Triangle(x,y));
+                mRenderer.addShape(new Card(x, y));
                 Log.d(TAG, "onTouch detected: " + x + ":" + y);
                 return false;
             }

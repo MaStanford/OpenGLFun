@@ -11,7 +11,7 @@ import java.nio.ByteOrder;
 /**
  * Created by Mark Stanford on 11/18/14.
  */
-public class Triangle extends Drawable {
+public class Card extends Drawable {
 
     private static final String TAG = "Triangle";
 
@@ -27,7 +27,7 @@ public class Triangle extends Drawable {
                     (0),        (0+mSize),     (0.0f)   // bottom right
             };
 
-    public Triangle(float x, float y) {
+    public Card(float x, float y) {
 
         /**
          * Here is where we will load and compile the shaders for now. This should be somewhere else tho

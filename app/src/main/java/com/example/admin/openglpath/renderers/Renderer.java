@@ -3,8 +3,8 @@ package com.example.admin.openglpath.renderers;
 import android.opengl.GLSurfaceView;
 import android.util.Log;
 
+import com.example.admin.openglpath.shapes.Card;
 import com.example.admin.openglpath.shapes.Drawable;
-import com.example.admin.openglpath.shapes.Triangle;
 
 import java.util.List;
 
@@ -77,7 +77,7 @@ public class Renderer implements GLSurfaceView.Renderer {
         // Clear the rendering surface.
         glClear(GL_COLOR_BUFFER_BIT);
 
-        new Triangle(0,0).draw();
+        new Card(0,0).draw();
 
         //Iterate through the drawableList
         for (Drawable drawable : drawableList) {
