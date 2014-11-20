@@ -5,14 +5,13 @@ import android.opengl.GLSurfaceView;
 import android.util.Log;
 
 import com.example.admin.openglpath.R;
+import com.example.admin.openglpath.data.DataHolder;
 import com.example.admin.openglpath.shapes.Card;
 import com.example.admin.openglpath.shapes.Drawable;
 import com.example.admin.openglpath.util.ColorUtil;
 import com.example.admin.openglpath.util.ShaderHelper;
 import com.example.admin.openglpath.util.ShaderType;
 import com.example.admin.openglpath.util.TextResourceReader;
-
-import java.util.List;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -32,13 +31,9 @@ public class Renderer implements GLSurfaceView.Renderer {
     int BGColor;
     Context mContext;
 
-
-    private List<Drawable> drawableList;
-
-    public Renderer(Context context, int color, List<Drawable> drawableList) {
+    public Renderer(Context context, int color) {
         this.mContext = context;
         BGColor = color;
-        this.drawableList = drawableList;
     }
 
     @Override
@@ -59,11 +54,11 @@ public class Renderer implements GLSurfaceView.Renderer {
         ShaderHelper.getInstance().putCompiledShader(ShaderType.Triangle, program);
     }
 
-    public void setColor(int color) {
+    public void setBGColor(int color) {
         this.BGColor = color;
     }
 
-    public int getColor() {
+    public int getBGColor() {
         return this.BGColor;
     }
 
@@ -92,22 +87,8 @@ public class Renderer implements GLSurfaceView.Renderer {
         new Card(0,0,255).draw();
 
         //Iterate through the drawableList
-        for (Drawable drawable : drawableList) {
+        for (Drawable drawable : DataHolder.getInstance().getDrawableList()) {
             drawable.draw();
         }
-    }
-
-    public List<Drawable> getDrawableList() {
-        return drawableList;
-    }
-
-    public void setDrawableList(List<Drawable> drawableList) {
-        this.drawableList = drawableList;
-        Log.d(TAG, "ShapeList: " + this.drawableList.size());
-    }
-
-    public void addShape(Drawable drawable) {
-        this.drawableList.add(drawable);
-        Log.d(TAG, "ShapeList: " + this.drawableList.size());
     }
 }

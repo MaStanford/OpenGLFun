@@ -5,21 +5,15 @@ import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
-import android.util.Log;
-import android.view.DragEvent;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
 import com.example.admin.openglpath.R;
-import com.example.admin.openglpath.shapes.Card;
-import com.example.admin.openglpath.shapes.Drawable;
-import com.example.admin.openglpath.util.ViewUtils;
+import com.example.admin.openglpath.data.DataHolder;
+import com.example.admin.openglpath.util.GestureListener;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class CustomGLView extends GLSurfaceView {
+public class CustomGLView extends GLSurfaceView implements View.OnTouchListener{
     public static final String TAG = "CustomGLView";
 
     //Attr from xml
@@ -31,19 +25,11 @@ public class CustomGLView extends GLSurfaceView {
     //Is renderer set
     private boolean rendererSet = false;
 
-    //Square to draw
-    private static List<Drawable> squareList;
-
     //Renderer, we need a reference to set the data structure
     private com.example.admin.openglpath.renderers.Renderer mRenderer;
 
-    private class GestureListener extends GestureDetector.SimpleOnGestureListener {
-        @Override
-        public boolean onFling(MotionEvent event1, MotionEvent event2, float velocityX, float velocityY) {
-            Log.d(TAG, "Gesture deteor hit onfling");
-            return true;
-        }
-    }
+    //Gesture detector for detecting stuffs
+    final GestureDetector mGestureDetector;
 
     public CustomGLView(Context context) {
         super(context);
@@ -51,6 +37,12 @@ public class CustomGLView extends GLSurfaceView {
         mBackGroundColor = Color.DKGRAY;
         mShapeColor = Color.CYAN;
         mSize = 24;
+
+        //Init gdt
+        mGestureDetector = new GestureDetector(getContext(), new GestureListener(context));
+
+        //Add ourselves to the dataholder
+        DataHolder.getInstance().setWorkspaceView(this);
 
         setupOpenGL();
     }
@@ -69,13 +61,16 @@ public class CustomGLView extends GLSurfaceView {
             a.recycle();
         }
 
+        //Init gdt
+        mGestureDetector = new GestureDetector(getContext(), new GestureListener(context));
+
+        //Add ourselves to the dataholder
+        DataHolder.getInstance().setWorkspaceView(this);
+
         setupOpenGL();
     }
 
     private void setupOpenGL(){
-
-        //Set up data structure
-        squareList =  new ArrayList<Drawable>();
 
         //Set the context
         setEGLContextClientVersion(2);
@@ -84,7 +79,7 @@ public class CustomGLView extends GLSurfaceView {
         setFocusableInTouchMode(true);
 
         //Initialize the renderer
-        mRenderer = new com.example.admin.openglpath.renderers.Renderer(this.getContext(), mBackGroundColor, new ArrayList<Drawable>());
+        mRenderer = new com.example.admin.openglpath.renderers.Renderer(this.getContext(), mBackGroundColor);
 
         // Set the Renderer for drawing on the GLSurfaceView
         setRenderer(mRenderer);
@@ -95,30 +90,16 @@ public class CustomGLView extends GLSurfaceView {
         //Maintain the state of the class
         rendererSet = true;
 
-        //Gesture detector
-        final GestureDetector gdt = new GestureDetector(getContext(), new GestureListener());
-
-        setOnTouchListener(new View.OnTouchListener() {
-
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                float x, y;
-                float scaled[] = ViewUtils.scaleTouchEvent(view, motionEvent.getX(), motionEvent.getY(), 2);
-                x = scaled[0];
-                y = scaled[1];
-                mRenderer.addShape(new Card(x, y, mShapeColor));
-                Log.d(TAG, "onTouch detected: " + x + ":" + y);
-
-                gdt.onTouchEvent(motionEvent);
-
-                return true;
-            }
-        });
+        //Set the onTouchListener
+        setOnTouchListener(this);
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        Log.d(TAG, "onTouch detected: " + event.getX() + ":" + event.getY() );
-        return super.onTouchEvent(event);
+    public boolean onTouch(View view, MotionEvent motionEvent) {
+
+        //Send the event out to the gesture detector
+        mGestureDetector.onTouchEvent(motionEvent);
+
+        return true;
     }
 }
