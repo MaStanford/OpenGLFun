@@ -27,7 +27,7 @@ public class Card extends Drawable {
         mProgram = ShaderHelper.getInstance().getCompiledShaders().get(mShaderType);
 
         //Generating the vertices using the x,y
-        generateNewVertices(x, y, z);
+        generateNewVertices(this.x, this.y, this.z);
 
         // initialize vertex byte buffer for shape coordinates
         ByteBuffer bb = ByteBuffer.allocateDirect(shapeCoords.length * 4); // (number of coordinate values * 4 bytes per float)
@@ -117,6 +117,11 @@ public class Card extends Drawable {
     public void setXYZ(float x, float y, float z) {
         x = x - mSize/2;
         y = y + mSize/2;
-        super.setXYZ(x,y,z);
+
+        this.x = x;
+        this.y = y;
+        this.z = z;
+
+        generateNewVertices(x,y,z);
     }
 }

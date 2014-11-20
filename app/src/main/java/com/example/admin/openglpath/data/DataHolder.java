@@ -6,6 +6,7 @@ import android.util.Log;
 import com.example.admin.openglpath.shapes.Drawable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -48,7 +49,7 @@ public class DataHolder {
      * Private constructor for our singleton pattern
      */
     private DataHolder(){
-        mDrawableList = new ArrayList<Drawable>();
+        mDrawableList = Collections.synchronizedList(new ArrayList<Drawable>());
         mCurrentSelectedColor = 255; //Blue
     }
 

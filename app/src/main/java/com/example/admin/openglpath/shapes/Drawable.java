@@ -7,7 +7,7 @@ import java.nio.FloatBuffer;
 /**
  * Created by Mark Stanford on 11/18/14.
  */
-public abstract class Drawable {
+public abstract class Drawable implements IDrawable{
 
     //The size of the shape
     protected float mSize = .2f;
@@ -42,9 +42,7 @@ public abstract class Drawable {
     // number of coordinates per vertex in this array
     static final int COORDS_PER_VERTEX = 3;
 
-    public Drawable(float x, float y, float z){
-        setXYZ(x,y,z);
-    }
+    public Drawable(float x, float y, float z){}
 
     abstract public void draw();
 
@@ -69,11 +67,12 @@ public abstract class Drawable {
      */
     abstract protected void generateNewVertices(float x, float y, float z);
 
-    public float[] getmColor() {
+    public float[] getColor() {
         return mColor;
     }
 
-    public void setmColor(float[] mColor) {
+    @Override
+    public void setColor(float[] mColor) {
         this.mColor = mColor;
     }
 

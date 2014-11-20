@@ -6,7 +6,6 @@ import android.util.Log;
 
 import com.example.admin.openglpath.R;
 import com.example.admin.openglpath.data.DataHolder;
-import com.example.admin.openglpath.shapes.Drawable;
 import com.example.admin.openglpath.util.ColorUtil;
 import com.example.admin.openglpath.util.ShaderHelper;
 import com.example.admin.openglpath.util.ShaderType;
@@ -83,11 +82,10 @@ public class Renderer implements GLSurfaceView.Renderer {
         // Clear the rendering surface.
         glClear(GL_COLOR_BUFFER_BIT);
 
-        //new Card(0,0,255).draw();
-
-        //Iterate through the drawableList
-        for (Drawable drawable : DataHolder.getInstance().getDrawableList()) {
-            drawable.draw();
+        //Iterate through the drawableList, cannot use enhanced with an iterator if we remove or add to list while iterating
+        //http://stackoverflow.com/questions/8189466/java-util-concurrentmodificationexception
+        for (int i = 0; i< DataHolder.getInstance().getDrawableList().size() ; i++) {
+            DataHolder.getInstance().getDrawableList().get(i).draw();
         }
     }
 }
