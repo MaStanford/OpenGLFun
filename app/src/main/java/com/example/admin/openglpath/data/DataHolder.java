@@ -76,7 +76,7 @@ public class DataHolder {
      *
      * @param mCurrentSelectedDrawable
      */
-    public void setCurrentSelectedDrawable(final Drawable mCurrentSelectedDrawable) {
+    public void setCurrentSelectedDrawable(Drawable mCurrentSelectedDrawable) {
         this.mCurrentSelectedDrawable = mCurrentSelectedDrawable;
     }
 

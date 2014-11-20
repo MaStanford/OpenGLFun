@@ -6,7 +6,6 @@ import android.util.Log;
 
 import com.example.admin.openglpath.R;
 import com.example.admin.openglpath.data.DataHolder;
-import com.example.admin.openglpath.shapes.Card;
 import com.example.admin.openglpath.shapes.Drawable;
 import com.example.admin.openglpath.util.ColorUtil;
 import com.example.admin.openglpath.util.ShaderHelper;
@@ -84,7 +83,7 @@ public class Renderer implements GLSurfaceView.Renderer {
         // Clear the rendering surface.
         glClear(GL_COLOR_BUFFER_BIT);
 
-        new Card(0,0,255).draw();
+        //new Card(0,0,255).draw();
 
         //Iterate through the drawableList
         for (Drawable drawable : DataHolder.getInstance().getDrawableList()) {

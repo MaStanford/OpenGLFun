@@ -1,6 +1,7 @@
 package com.example.admin.openglpath.shapes;
 
 import android.opengl.GLES20;
+import android.util.Log;
 
 import com.example.admin.openglpath.util.ColorUtil;
 import com.example.admin.openglpath.util.ShaderHelper;
@@ -59,7 +60,7 @@ public class Card extends Drawable {
         // Add program to OpenGL ES environment
         GLES20.glUseProgram(mProgram);
 
-        // get handle to vertex shader's vPosition member
+        // get handle to vertex shader's vPosition member from the shader
         mPositionHandle = GLES20.glGetAttribLocation(mProgram, "vPosition");
 
         // Enable a handle to the triangle vertices
@@ -68,7 +69,7 @@ public class Card extends Drawable {
         // Prepare the triangle coordinate data
         GLES20.glVertexAttribPointer(mPositionHandle, COORDS_PER_VERTEX, GLES20.GL_FLOAT, false, vertexStride, vertexBuffer);
 
-        // get handle to fragment shader's vColor member
+        // get handle to fragment shader's vColor member from the shader
         mColorHandle = GLES20.glGetUniformLocation(mProgram, "vColor");
 
         // Set mColor for drawing the triangle
@@ -88,6 +89,7 @@ public class Card extends Drawable {
      */
     @Override
     protected void generateNewVertices(float x, float y){
+        Log.d(TAG, "generateNewVertices called!");
         this.shapeCoords = new float[]
                 {
                 //       X           Y              Z          Triangle 1
@@ -99,7 +101,24 @@ public class Card extends Drawable {
                         (x+mSize),  (y-mSize),     (0.0f),  // bottom left
                         (x+mSize),  (y),           (0.0f)   // bottom right
                 };
+
+        //Buffer stuff
+        // initialize vertex byte buffer for shape coordinates
+        ByteBuffer bb = ByteBuffer.allocateDirect(shapeCoords.length * 4); // (number of coordinate values * 4 bytes per float)
+
+        // use the device hardware's native byte order
+        bb.order(ByteOrder.nativeOrder());
+
+        // create a floating point buffer from the ByteBuffer
+        vertexBuffer = bb.asFloatBuffer();
+        // add the coordinates to the FloatBuffer
+        vertexBuffer.put(shapeCoords);
+        // set the buffer to read the first coordinate
+        vertexBuffer.position(0);
     }
 
-
+    @Override
+    public void setXY(float x, float y) {
+        generateNewVertices(x, y);
+    }
 }

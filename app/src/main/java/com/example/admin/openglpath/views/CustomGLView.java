@@ -67,6 +67,8 @@ public class CustomGLView extends GLSurfaceView implements View.OnTouchListener{
         //Add ourselves to the dataholder
         DataHolder.getInstance().setWorkspaceView(this);
 
+        DataHolder.getInstance().setCurrentSelectedColor(mShapeColor);
+
         setupOpenGL();
     }
 

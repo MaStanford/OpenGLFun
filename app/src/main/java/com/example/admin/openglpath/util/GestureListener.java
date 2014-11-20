@@ -24,29 +24,59 @@ public class GestureListener extends android.view.GestureDetector.SimpleOnGestur
 
     @Override
     public boolean onSingleTapUp(MotionEvent e) {
+        DataHolder dh = DataHolder.getInstance();
+        float x, y;
+        float scaled[] = ViewUtils.scaleTouchEvent(dh.getWorkspaceView(), e.getX(), e.getY(), 2);
+        x = scaled[0];
+        y = scaled[1];
+        Log.d(TAG, "onSingleTapUp detected: " + x + ":" + y);
+        DataHolder.getInstance().getCurrentSelectedDrawable().setXY(x,y);
         return super.onSingleTapUp(e);
     }
 
     @Override
     public void onLongPress(MotionEvent e) {
+        DataHolder dh = DataHolder.getInstance();
+        float x, y;
+        float scaled[] = ViewUtils.scaleTouchEvent(dh.getWorkspaceView(), e.getX(), e.getY(), 2);
+        x = scaled[0];
+        y = scaled[1];
+        Log.d(TAG, "onLongPress detected: " + x + ":" + y);
+        DataHolder.getInstance().getCurrentSelectedDrawable().setXY(x,y);
         super.onLongPress(e);
     }
 
     @Override
     public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-        return super.onScroll(e1, e2, distanceX, distanceY);
-    }
+        //TODO:Check to see if we have a currently selected object.  If so, then change it's x,y according to the scroll.
 
-    @Override
-    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
         DataHolder dh = DataHolder.getInstance();
-        //TODO:Check to see if we have a currently selected object.  If so, then change it's x,y.
         if(dh.isCurrentlySelectedDrawable()){
             //We have a currently selected drawable. We need to change it's x,y;
             float x, y;
             float scaled[] = ViewUtils.scaleTouchEvent(dh.getWorkspaceView(), e2.getX(), e2.getY(), 2);
             x = scaled[0];
             y = scaled[1];
+            Log.d(TAG, "onScroll detected: " + x + ":" + y);
+            DataHolder.getInstance().getCurrentSelectedDrawable().setXY(x,y);
+        }
+
+        return super.onScroll(e1, e2, distanceX, distanceY);
+    }
+
+    @Override
+    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+
+        //TODO:Check to see if we have a currently selected object.  If so, then change it's x,y according to the fling.
+
+        DataHolder dh = DataHolder.getInstance();
+        if(dh.isCurrentlySelectedDrawable()){
+            //We have a currently selected drawable. We need to change it's x,y;
+            float x, y;
+            float scaled[] = ViewUtils.scaleTouchEvent(dh.getWorkspaceView(), e2.getX(), e2.getY(), 2);
+            x = scaled[0];
+            y = scaled[1];
+            Log.d(TAG, "onFling detected: " + x + ":" + y);
             DataHolder.getInstance().getCurrentSelectedDrawable().setXY(x,y);
         }
         return super.onFling(e1, e2, velocityX, velocityY);
@@ -67,9 +97,9 @@ public class GestureListener extends android.view.GestureDetector.SimpleOnGestur
         x = scaled[0];
         y = scaled[1];
         Card newCard = new Card(x, y, dh.getCurrentSelectedColor());
+        dh.setCurrentSelectedDrawable(newCard);
         dh.addDrawable(newCard);
         Log.d(TAG, "onTouch detected: " + x + ":" + y);
-        dh.setCurrentSelectedDrawable(newCard);
 
         return super.onDown(e);
     }
