@@ -1,7 +1,7 @@
 package com.example.admin.openglpath.shapes;
 
-import android.graphics.Color;
 import android.opengl.GLES20;
+import android.util.Log;
 
 import com.example.admin.openglpath.util.ColorUtil;
 import com.example.admin.openglpath.util.ShaderHelper;
@@ -31,19 +31,16 @@ public class Card extends Drawable {
 
     public Card(float x, float y, int color) {
 
-        /**
-         * Here is where we will load and compile the shaders for now. This should be somewhere else tho
-         */
-        new ShaderHelper().compileAndLoadShader();
-
         mColor = ColorUtil.getRGBAFromInt(color);
 
         //Get the shader for this shape and the program id where the shader is loaded
         mShaderType = ShaderType.Triangle;
-        mProgram = ShaderHelper.compiledShaders.get(mShaderType);
+        mProgram = ShaderHelper.getInstance().getCompiledShaders().get(mShaderType);
+
+        Log.d(TAG, "Prgram: " + mProgram);
 
         //Generating the vertices using the x,y
-        generateNewVertices(x,y);
+        generateNewVertices(x, y);
 
         // initialize vertex byte buffer for shape coordinates
         ByteBuffer bb = ByteBuffer.allocateDirect(shapeCoords.length * 4); // (number of coordinate values * 4 bytes per float)

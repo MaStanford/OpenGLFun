@@ -75,7 +75,7 @@ public class CustomGLView extends GLSurfaceView {
         setFocusableInTouchMode(true);
 
         //Initialize the renderer
-        mRenderer = new com.example.admin.openglpath.renderers.Renderer(mBackGroundColor, new ArrayList<Drawable>());
+        mRenderer = new com.example.admin.openglpath.renderers.Renderer(this.getContext(), mBackGroundColor, new ArrayList<Drawable>());
 
         // Set the Renderer for drawing on the GLSurfaceView
         setRenderer(mRenderer);

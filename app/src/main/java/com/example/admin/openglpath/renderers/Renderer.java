@@ -1,11 +1,16 @@
 package com.example.admin.openglpath.renderers;
 
+import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.util.Log;
 
+import com.example.admin.openglpath.R;
 import com.example.admin.openglpath.shapes.Card;
 import com.example.admin.openglpath.shapes.Drawable;
 import com.example.admin.openglpath.util.ColorUtil;
+import com.example.admin.openglpath.util.ShaderHelper;
+import com.example.admin.openglpath.util.ShaderType;
+import com.example.admin.openglpath.util.TextResourceReader;
 
 import java.util.List;
 
@@ -24,33 +29,50 @@ public class Renderer implements GLSurfaceView.Renderer {
 
     public static String TAG = "Renderer";
 
-    int mColor;
+    int BGColor;
+    Context mContext;
+
 
     private List<Drawable> drawableList;
 
-    public Renderer(int color, List<Drawable> drawableList) {
-        mColor = color;
+    public Renderer(Context context, int color, List<Drawable> drawableList) {
+        this.mContext = context;
+        BGColor = color;
         this.drawableList = drawableList;
     }
 
     @Override
     public void onSurfaceCreated(GL10 gl10, EGLConfig eglConfig) {
         clearColor();
+
+        //This is where we will compile the shader for now TODO: Move this to loading screen
+        String vertexShaderSource = TextResourceReader.readTextFileFromResource(mContext, R.raw.simple_vertex_shader);
+        String fragmentShaderSource = TextResourceReader .readTextFileFromResource(mContext, R.raw.simple_fragment_shader);
+
+        int vertexShader = ShaderHelper.getInstance().compileVertexShader(vertexShaderSource);
+        int fragmentShader = ShaderHelper.getInstance().compileFragmentShader(fragmentShaderSource);
+
+        int code = ShaderHelper.getInstance().attachShader(vertexShader,fragmentShader);
+
+        int program = ShaderHelper.getInstance().attachShader(vertexShader,fragmentShader);
+
+        ShaderHelper.getInstance().putCompiledShader(ShaderType.Triangle, program);
+
     }
 
     public void setColor(int color) {
-        this.mColor = color;
+        this.BGColor = color;
     }
 
     public int getColor() {
-        return this.mColor;
+        return this.BGColor;
     }
 
     /**
      * Clears the screen with the mColor specified in the xml
      */
     public void clearColor() {
-        float[] color = ColorUtil.getRGBAFromInt(mColor);
+        float[] color = ColorUtil.getRGBAFromInt(BGColor);
 
         glClearColor(color[0], color[1], color[2], color[3]);
     }
@@ -66,7 +88,7 @@ public class Renderer implements GLSurfaceView.Renderer {
         // Clear the rendering surface.
         glClear(GL_COLOR_BUFFER_BIT);
 
-        new Card(0,0,35).draw();
+//        new Card(0,0,255).draw();
 
         //Iterate through the drawableList
         for (Drawable drawable : drawableList) {
