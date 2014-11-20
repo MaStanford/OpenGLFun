@@ -16,20 +16,9 @@ public class Card extends Drawable {
 
     private static final String TAG = "Triangle";
 
-    float shapeCoords[] = new float[]
-            {
-            //       X           Y              Z          Triangle 1
-                    (0),        (0),           (0.0f),  // top
-                    (0),        (0-mSize),     (0.0f),  // bottom left
-                    (0+mSize),  (0-mSize),     (0.0f),  // bottom right
-                                                        // Triangle 2
-                    (0),        (0),           (0.0f),  // top
-                    (0+mSize),  (0-mSize),     (0.0f),  // bottom left
-                    (0),        (0+mSize),     (0.0f)   // bottom right
-            };
-
     public Card(float x, float y, float z, int color) {
         super(x,y,z);
+        setXYZ(x,y,z);
 
         mColor = ColorUtil.getRGBAFromInt(color);
 
@@ -126,7 +115,8 @@ public class Card extends Drawable {
 
     @Override
     public void setXYZ(float x, float y, float z) {
+        x = x - mSize/2;
+        y = y + mSize/2;
         super.setXYZ(x,y,z);
-        generateNewVertices(x, y, z);
     }
 }

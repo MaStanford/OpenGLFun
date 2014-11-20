@@ -1,7 +1,5 @@
 package com.example.admin.openglpath.util;
 
-import android.util.Log;
-
 /**
  * Created by admin on 11/19/14.
  */

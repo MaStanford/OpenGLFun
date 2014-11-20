@@ -153,6 +153,10 @@ public class GestureListener extends android.view.GestureDetector.SimpleOnGestur
 
             dh.removeDrawable(drawable);
             dh.clearCurrentSelectedDrawable();
+        }else{
+            dh.removeDrawable(mcurrentDrawable);
+            mcurrentDrawable = null;
+            dh.clearCurrentSelectedDrawable();
         }
         return super.onDoubleTap(e);
     }

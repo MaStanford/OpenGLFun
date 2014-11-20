@@ -49,7 +49,9 @@ public abstract class Drawable {
     abstract public void draw();
 
     /**
-     * Sets the X and Y of the shape
+     * Sets the X and Y of the shape.
+     *
+     * We may be able to assume we want to have this x and y be the center of the shape.
      * @param x
      * @param y
      */
