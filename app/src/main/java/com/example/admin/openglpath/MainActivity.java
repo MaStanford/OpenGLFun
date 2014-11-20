@@ -2,8 +2,13 @@ package com.example.admin.openglpath;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import com.example.admin.openglpath.util.ShaderHelper;
+import com.example.admin.openglpath.util.ShaderType;
+import com.example.admin.openglpath.util.TextResourceReader;
 
 public class MainActivity extends Activity {
 
@@ -35,5 +40,9 @@ public class MainActivity extends Activity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void dostuffwithshaders(){
+
     }
 }

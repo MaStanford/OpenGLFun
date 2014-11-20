@@ -49,15 +49,14 @@ public class Renderer implements GLSurfaceView.Renderer {
         String vertexShaderSource = TextResourceReader.readTextFileFromResource(mContext, R.raw.simple_vertex_shader);
         String fragmentShaderSource = TextResourceReader .readTextFileFromResource(mContext, R.raw.simple_fragment_shader);
 
+        Log.d(TAG, vertexShaderSource + fragmentShaderSource);
+
         int vertexShader = ShaderHelper.getInstance().compileVertexShader(vertexShaderSource);
         int fragmentShader = ShaderHelper.getInstance().compileFragmentShader(fragmentShaderSource);
-
-        int code = ShaderHelper.getInstance().attachShader(vertexShader,fragmentShader);
 
         int program = ShaderHelper.getInstance().attachShader(vertexShader,fragmentShader);
 
         ShaderHelper.getInstance().putCompiledShader(ShaderType.Triangle, program);
-
     }
 
     public void setColor(int color) {
@@ -81,6 +80,8 @@ public class Renderer implements GLSurfaceView.Renderer {
     public void onSurfaceChanged(GL10 gl10, int width, int height) {
         // Set the OpenGL viewport to fill the entire surface.
         glViewport(0, 0, width, height);
+
+
     }
 
     @Override
@@ -88,7 +89,7 @@ public class Renderer implements GLSurfaceView.Renderer {
         // Clear the rendering surface.
         glClear(GL_COLOR_BUFFER_BIT);
 
-//        new Card(0,0,255).draw();
+        new Card(0,0,255).draw();
 
         //Iterate through the drawableList
         for (Drawable drawable : drawableList) {

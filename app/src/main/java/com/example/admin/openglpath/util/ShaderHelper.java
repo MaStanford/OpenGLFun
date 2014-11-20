@@ -6,7 +6,7 @@ import android.util.Log;
 import java.util.HashMap;
 import java.util.Map;
 
-import static android.opengl.GLES20.glCreateShader;
+import static android.opengl.GLES20.*;
 
 /**
  * Created by Mark Stanford on 11/19/14.
@@ -19,10 +19,6 @@ public class ShaderHelper {
      * Private constructor for our singleton pattern
      */
     private ShaderHelper(){
-    }
-
-    public void putCompiledShader(ShaderType type, int program) {
-        this.compiledShaders.put(type, program);
     }
 
     /**
@@ -45,8 +41,7 @@ public class ShaderHelper {
     private Map<ShaderType, Integer> compiledShaders;
 
     /**
-     * This will eventually compile and load up all the shaders for the whole program
-     * It will iterate through the list of shaders and shader types and fill up the map
+     * Links shaders into a program
      */
     public int attachShader(int vertextShaderID, int fragmentShaderID){
 
@@ -56,6 +51,22 @@ public class ShaderHelper {
         GLES20.glAttachShader(mProgram, vertextShaderID);  // add the vertex shader to program
         GLES20.glAttachShader(mProgram, fragmentShaderID); // add the fragment shader to program
         GLES20.glLinkProgram(mProgram);                    // creates OpenGL ES program executables
+
+        if(mProgram == 0){
+            Log.w(TAG, "Program creation failed");
+            return 0;
+        }
+
+        //Checking linking status
+        final int[] linkStatus = new int[1];
+        glGetProgramiv(mProgram, GL_LINK_STATUS, linkStatus, 0);
+        if (linkStatus[0] == 0) {
+            // If it failed, delete the program object.
+            glDeleteProgram(mProgram);
+            Log.w(TAG, "Linking of program failed.");
+            return 0;
+        }
+
 
         compiledShaders.put(ShaderType.Triangle, mProgram);
 
@@ -90,5 +101,9 @@ public class ShaderHelper {
 
     public void setCompiledShaders(Map<ShaderType, Integer> compiledShaders) {
         this.compiledShaders = compiledShaders;
+    }
+
+    public void putCompiledShader(ShaderType type, int program) {
+        this.compiledShaders.put(type, program);
     }
 }

@@ -7,6 +7,7 @@ import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.DragEvent;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -35,6 +36,14 @@ public class CustomGLView extends GLSurfaceView {
 
     //Renderer, we need a reference to set the data structure
     private com.example.admin.openglpath.renderers.Renderer mRenderer;
+
+    private class GestureListener extends GestureDetector.SimpleOnGestureListener {
+        @Override
+        public boolean onFling(MotionEvent event1, MotionEvent event2, float velocityX, float velocityY) {
+            Log.d(TAG, "Gesture deteor hit onfling");
+            return true;
+        }
+    }
 
     public CustomGLView(Context context) {
         super(context);
@@ -86,7 +95,11 @@ public class CustomGLView extends GLSurfaceView {
         //Maintain the state of the class
         rendererSet = true;
 
+        //Gesture detector
+        final GestureDetector gdt = new GestureDetector(getContext(), new GestureListener());
+
         setOnTouchListener(new View.OnTouchListener() {
+
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 float x, y;
@@ -95,16 +108,17 @@ public class CustomGLView extends GLSurfaceView {
                 y = scaled[1];
                 mRenderer.addShape(new Card(x, y, mShapeColor));
                 Log.d(TAG, "onTouch detected: " + x + ":" + y);
-                return false;
-            }
-        });
 
-        setOnDragListener(new View.OnDragListener() {
-            @Override
-            public boolean onDrag(View view, DragEvent dragEvent) {
-                Log.d(TAG, "onDrag detected: " + dragEvent.getX() + ":" + dragEvent.getY());
-                return false;
+                gdt.onTouchEvent(motionEvent);
+
+                return true;
             }
         });
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        Log.d(TAG, "onTouch detected: " + event.getX() + ":" + event.getY() );
+        return super.onTouchEvent(event);
     }
 }

@@ -1,7 +1,6 @@
 package com.example.admin.openglpath.shapes;
 
 import android.opengl.GLES20;
-import android.util.Log;
 
 import com.example.admin.openglpath.util.ColorUtil;
 import com.example.admin.openglpath.util.ShaderHelper;
@@ -36,8 +35,6 @@ public class Card extends Drawable {
         //Get the shader for this shape and the program id where the shader is loaded
         mShaderType = ShaderType.Triangle;
         mProgram = ShaderHelper.getInstance().getCompiledShaders().get(mShaderType);
-
-        Log.d(TAG, "Prgram: " + mProgram);
 
         //Generating the vertices using the x,y
         generateNewVertices(x, y);
@@ -78,7 +75,7 @@ public class Card extends Drawable {
         GLES20.glUniform4fv(mColorHandle, 1, mColor, 0);
 
         // Draw the triangle
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 6);
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, (shapeCoords.length / COORDS_PER_VERTEX));
 
         // Disable vertex array
         GLES20.glDisableVertexAttribArray(mPositionHandle);
