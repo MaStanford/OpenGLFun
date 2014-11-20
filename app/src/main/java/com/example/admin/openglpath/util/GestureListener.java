@@ -1,6 +1,7 @@
 package com.example.admin.openglpath.util;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.MotionEvent;
 
 import com.example.admin.openglpath.data.DataHolder;
@@ -16,7 +17,12 @@ public class GestureListener extends android.view.GestureDetector.SimpleOnGestur
 
     public static final String TAG = "GestureListener";
 
+    //Maybe we will need a context, who knows
     Context mContext;
+
+    //The previously made object in case we have a double tap or long
+    Drawable mPreviousDrawable;
+    Drawable mcurrentDrawable;
 
     public GestureListener(Context context) {
         this.mContext = context;
@@ -25,11 +31,8 @@ public class GestureListener extends android.view.GestureDetector.SimpleOnGestur
     @Override
     public boolean onSingleTapUp(MotionEvent e) {
         DataHolder dh = DataHolder.getInstance();
-        float x, y;
-        float scaled[] = ViewUtils.scaleTouchEvent(dh.getWorkspaceView(), e.getX(), e.getY(), 2);
-        x = scaled[0];
-        y = scaled[1];
-//        Log.d(TAG, "onSingleTapUp detected: " + x + ":" + y);
+        dh.clearCurrentSelectedDrawable();
+        Log.d(TAG, "onSingleTapUp detected");
         return super.onSingleTapUp(e);
     }
 
@@ -40,13 +43,12 @@ public class GestureListener extends android.view.GestureDetector.SimpleOnGestur
         float scaled[] = ViewUtils.scaleTouchEvent(dh.getWorkspaceView(), e.getX(), e.getY(), 2);
         x = scaled[0];
         y = scaled[1];
-//        Log.d(TAG, "onLongPress detected: " + x + ":" + y);
+        Log.d(TAG, "onLongPress detected: " + x + ":" + y);
         super.onLongPress(e);
     }
 
     @Override
     public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-        //TODO:Check to see if we have a currently selected object.  If so, then change it's x,y according to the scroll.
 
         DataHolder dh = DataHolder.getInstance();
         if(dh.isCurrentlySelectedDrawable()){
@@ -55,8 +57,14 @@ public class GestureListener extends android.view.GestureDetector.SimpleOnGestur
             float scaled[] = ViewUtils.scaleTouchEvent(dh.getWorkspaceView(), e2.getX(), e2.getY(), 2);
             x = scaled[0];
             y = scaled[1];
-//            Log.d(TAG, "onScroll detected: " + x + ":" + y);
-            DataHolder.getInstance().getCurrentSelectedDrawable().setXYZ(x,y,1);
+            Log.d(TAG, "onScroll detected: " + x + ":" + y);
+            DataHolder.getInstance().getCurrentSelectedDrawable().setXYZ(x, y, 1);
+        }
+
+        //Check to see if we have an up gesture
+        if(e2.getAction() == MotionEvent.ACTION_UP){
+            Log.d(TAG, "onScroll action up == " + (e2.getAction() == MotionEvent.ACTION_UP));
+            dh.clearCurrentSelectedDrawable();
         }
 
         return super.onScroll(e1, e2, distanceX, distanceY);
@@ -65,8 +73,6 @@ public class GestureListener extends android.view.GestureDetector.SimpleOnGestur
     @Override
     public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
 
-        //TODO:Check to see if we have a currently selected object.  If so, then change it's x,y according to the fling.
-
         DataHolder dh = DataHolder.getInstance();
         if(dh.isCurrentlySelectedDrawable()){
             //We have a currently selected drawable. We need to change it's x,y;
@@ -74,9 +80,16 @@ public class GestureListener extends android.view.GestureDetector.SimpleOnGestur
             float scaled[] = ViewUtils.scaleTouchEvent(dh.getWorkspaceView(), e2.getX(), e2.getY(), 2);
             x = scaled[0];
             y = scaled[1];
-//            Log.d(TAG, "onFling detected: " + x + ":" + y);
-            DataHolder.getInstance().getCurrentSelectedDrawable().setXYZ(x,y,1);
+            Log.d(TAG, "onFling detected: " + x + ":" + y);
+            dh.getCurrentSelectedDrawable().setXYZ(x, y , 1);
         }
+
+        //Check to see if we have an up gesture
+        if(e2.getAction() == MotionEvent.ACTION_UP){
+            Log.d(TAG, "onFling action up == " + (e2.getAction() == MotionEvent.ACTION_UP));
+            dh.clearCurrentSelectedDrawable();
+        }
+
         return super.onFling(e1, e2, velocityX, velocityY);
     }
 
@@ -87,31 +100,24 @@ public class GestureListener extends android.view.GestureDetector.SimpleOnGestur
 
     @Override
     public boolean onDown(MotionEvent e) {
-
-        DataHolder dh = DataHolder.getInstance();
-        float x, y;
-        float scaled[] = ViewUtils.scaleTouchEvent(dh.getWorkspaceView(), e.getX(), e.getY(), 2);
-        x = scaled[0];
-        y = scaled[1];
-//        Log.d(TAG, "onTouch detected: " + x + ":" + y);
-
-        //Check to see if we intersect an object here.  If not then create one.
-        Drawable drawable = dh.getIntersectingDrawable(x,y);
-        if(drawable != null) {
-            drawable.setXYZ(x,y,1);
-            dh.setCurrentSelectedDrawable(drawable);
-        }else{ //TODO: we need to do a check to see what we are supposed to draw here
-            Card newCard = new Card(x, y, 1, dh.getCurrentSelectedColor());
-            dh.setCurrentSelectedDrawable(newCard);
-            dh.addDrawable(newCard);
-        }
-
-
         return super.onDown(e);
     }
 
     @Override
     public boolean onDoubleTap(MotionEvent e) {
+        DataHolder dh = DataHolder.getInstance();
+
+        float x, y;
+        float scaled[] = ViewUtils.scaleTouchEvent(dh.getWorkspaceView(), e.getX(), e.getY(), 2);
+        x = scaled[0];
+        y = scaled[1];
+
+        //Check to see if we intersect an object here.  If not then create one.
+        Drawable drawable = dh.getIntersectingDrawable(x,y);
+        if(drawable != null) {
+            dh.removeDrawable(drawable);
+            dh.clearCurrentSelectedDrawable();
+        }
         return super.onDoubleTap(e);
     }
 
@@ -122,6 +128,23 @@ public class GestureListener extends android.view.GestureDetector.SimpleOnGestur
 
     @Override
     public boolean onSingleTapConfirmed(MotionEvent e) {
+        DataHolder dh = DataHolder.getInstance();
+        float x, y;
+        float scaled[] = ViewUtils.scaleTouchEvent(dh.getWorkspaceView(), e.getX(), e.getY(), 2);
+        x = scaled[0];
+        y = scaled[1];
+        Log.d(TAG, "onDown detected: " + x + ":" + y);
+
+        //Check to see if we intersect an object here.  If not then create one.
+        Drawable drawable = dh.getIntersectingDrawable(x,y);
+        if(drawable != null) {
+            drawable.setXYZ(x, y, 1);
+            dh.setCurrentSelectedDrawable(drawable);
+        }else{ //TODO: we need to do a check to see what we are supposed to draw here
+            Card newCard = new Card(x, y, 1, dh.getCurrentSelectedColor());
+            dh.setCurrentSelectedDrawable(newCard);
+            dh.addDrawable(newCard);
+        }
         return super.onSingleTapConfirmed(e);
     }
 }
