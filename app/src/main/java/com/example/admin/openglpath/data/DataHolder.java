@@ -1,6 +1,7 @@
 package com.example.admin.openglpath.data;
 
 import android.opengl.GLSurfaceView;
+import android.util.Log;
 
 import com.example.admin.openglpath.shapes.Drawable;
 
@@ -14,6 +15,7 @@ import java.util.List;
  */
 public class DataHolder {
 
+    private static final String TAG = "DataHolder";
     /**
      * This is currently selected drawable on the screen.
      *
@@ -126,5 +128,32 @@ public class DataHolder {
 
     public void setCurrentSelectedColor(int mCurrentSelectedColor) {
         this.mCurrentSelectedColor = mCurrentSelectedColor;
+    }
+
+    /**
+     * Returns the drawable that intersects that x,y.
+     * If multiple intersect then it selects the one with the highest Z value;
+     *
+     * @param x
+     * @param y
+     * @return Top visible drawable or null if none
+     */
+    public Drawable getIntersectingDrawable(float x, float y) {
+        Drawable currentTopDrawable = null;
+        float currentHighestZValue = 0;
+
+        //Iterate through the list
+        for(Drawable drawable : this.mDrawableList){
+            //Check to see if the drawale intersects and if the Z value is good.
+            float zValue = drawable.doesIntersectXY(x,y);
+            if(zValue > currentHighestZValue){
+                currentHighestZValue = zValue;
+                currentTopDrawable = drawable;
+            }
+        }
+
+        Log.d(TAG, "getIntersectingDrawable == " + (currentTopDrawable != null));
+
+        return currentTopDrawable;
     }
 }

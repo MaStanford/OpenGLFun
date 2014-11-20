@@ -1,7 +1,6 @@
 package com.example.admin.openglpath.shapes;
 
 import android.opengl.GLES20;
-import android.util.Log;
 
 import com.example.admin.openglpath.util.ColorUtil;
 import com.example.admin.openglpath.util.ShaderHelper;
@@ -29,7 +28,8 @@ public class Card extends Drawable {
                     (0),        (0+mSize),     (0.0f)   // bottom right
             };
 
-    public Card(float x, float y, int color) {
+    public Card(float x, float y, float z, int color) {
+        super(x,y,z);
 
         mColor = ColorUtil.getRGBAFromInt(color);
 
@@ -38,7 +38,7 @@ public class Card extends Drawable {
         mProgram = ShaderHelper.getInstance().getCompiledShaders().get(mShaderType);
 
         //Generating the vertices using the x,y
-        generateNewVertices(x, y);
+        generateNewVertices(x, y, z);
 
         // initialize vertex byte buffer for shape coordinates
         ByteBuffer bb = ByteBuffer.allocateDirect(shapeCoords.length * 4); // (number of coordinate values * 4 bytes per float)
@@ -88,8 +88,7 @@ public class Card extends Drawable {
      * @param y
      */
     @Override
-    protected void generateNewVertices(float x, float y){
-        Log.d(TAG, "generateNewVertices called!");
+    protected void generateNewVertices(float x, float y, float z){
         this.shapeCoords = new float[]
                 {
                 //       X           Y              Z          Triangle 1
@@ -118,7 +117,16 @@ public class Card extends Drawable {
     }
 
     @Override
-    public void setXY(float x, float y) {
-        generateNewVertices(x, y);
+    public float doesIntersectXY(float x, float y) {
+        if((x > this.x) && (x < (this.x + mSize)) && (y < this.y) && (y > (this.y - mSize))){
+            return this.z;
+        }
+        return -1;
+    }
+
+    @Override
+    public void setXYZ(float x, float y, float z) {
+        super.setXYZ(x,y,z);
+        generateNewVertices(x, y, z);
     }
 }
