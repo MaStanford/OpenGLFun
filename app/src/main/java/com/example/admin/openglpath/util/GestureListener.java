@@ -21,8 +21,12 @@ public class GestureListener extends android.view.GestureDetector.SimpleOnGestur
     Context mContext;
 
     //The previously made object in case we have a double tap or long
-    Drawable mPreviousDrawable;
     Drawable mcurrentDrawable;
+
+    /**
+     * Weird issue where onDown gets called after onDoubleTap
+     */
+    boolean isDoubleLastCommand = false;
 
     public GestureListener(Context context) {
         this.mContext = context;
@@ -100,11 +104,36 @@ public class GestureListener extends android.view.GestureDetector.SimpleOnGestur
 
     @Override
     public boolean onDown(MotionEvent e) {
+
+        //TODO: weird issue, there must be a better way
+        if(!isDoubleLastCommand) {
+            DataHolder dh = DataHolder.getInstance();
+            float x, y;
+            float scaled[] = ViewUtils.scaleTouchEvent(dh.getWorkspaceView(), e.getX(), e.getY(), 2);
+            x = scaled[0];
+            y = scaled[1];
+            Log.d(TAG, "onDown detected: " + x + ":" + y);
+
+            //Check to see if we intersect an object here.  If not then create one.
+            Drawable drawable = dh.getIntersectingDrawable(x, y);
+            if (drawable != null) {
+                dh.setCurrentSelectedDrawable(drawable);
+                mcurrentDrawable = drawable;
+            } else { //TODO: we need to do a check to see what we are supposed to draw here
+                Card newCard = new Card(x, y, 1, dh.getCurrentSelectedColor());
+                dh.setCurrentSelectedDrawable(newCard);
+                dh.addDrawable(newCard);
+                mcurrentDrawable = newCard;
+            }
+        }
+        isDoubleLastCommand = false;
         return super.onDown(e);
     }
 
     @Override
     public boolean onDoubleTap(MotionEvent e) {
+        isDoubleLastCommand = true;
+
         DataHolder dh = DataHolder.getInstance();
 
         float x, y;
@@ -112,9 +141,16 @@ public class GestureListener extends android.view.GestureDetector.SimpleOnGestur
         x = scaled[0];
         y = scaled[1];
 
+        Log.d(TAG, "onDoubleTap detected: " + x + ":" + y);
+
         //Check to see if we intersect an object here.  If not then create one.
         Drawable drawable = dh.getIntersectingDrawable(x,y);
         if(drawable != null) {
+            if(mcurrentDrawable != null) {
+                dh.removeDrawable(mcurrentDrawable);
+                mcurrentDrawable = null;
+            }
+
             dh.removeDrawable(drawable);
             dh.clearCurrentSelectedDrawable();
         }
@@ -128,23 +164,6 @@ public class GestureListener extends android.view.GestureDetector.SimpleOnGestur
 
     @Override
     public boolean onSingleTapConfirmed(MotionEvent e) {
-        DataHolder dh = DataHolder.getInstance();
-        float x, y;
-        float scaled[] = ViewUtils.scaleTouchEvent(dh.getWorkspaceView(), e.getX(), e.getY(), 2);
-        x = scaled[0];
-        y = scaled[1];
-        Log.d(TAG, "onDown detected: " + x + ":" + y);
-
-        //Check to see if we intersect an object here.  If not then create one.
-        Drawable drawable = dh.getIntersectingDrawable(x,y);
-        if(drawable != null) {
-            drawable.setXYZ(x, y, 1);
-            dh.setCurrentSelectedDrawable(drawable);
-        }else{ //TODO: we need to do a check to see what we are supposed to draw here
-            Card newCard = new Card(x, y, 1, dh.getCurrentSelectedColor());
-            dh.setCurrentSelectedDrawable(newCard);
-            dh.addDrawable(newCard);
-        }
         return super.onSingleTapConfirmed(e);
     }
 }
