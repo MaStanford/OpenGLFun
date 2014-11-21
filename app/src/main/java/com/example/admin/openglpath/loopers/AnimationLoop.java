@@ -2,7 +2,6 @@ package com.example.admin.openglpath.loopers;
 
 import com.example.admin.openglpath.data.DataHolder;
 import com.example.admin.openglpath.shapes.Drawable;
-import com.example.admin.openglpath.util.Constants;
 
 import java.util.Map;
 
@@ -10,6 +9,14 @@ import java.util.Map;
  * Created by Mark Stanford on 11/20/14.
  */
 public class AnimationLoop {
+    /**
+     *  Wait is how long the thread should sleep.  17 ms is 60fps
+     *  Use this to figure out how to scale flings/animations per iteration.
+     */
+    public static final int WAIT = 17;
+
+    //How many ms in a second
+    public static final int SECOND = 1000;
 
     /**
      * TODO: We can have multiple threads here if we need to.
@@ -33,7 +40,7 @@ public class AnimationLoop {
                     }
 
                     try {
-                        Thread.sleep(Constants.WAIT);
+                        Thread.sleep(WAIT);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }

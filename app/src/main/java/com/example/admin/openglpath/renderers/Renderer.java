@@ -31,6 +31,9 @@ public class Renderer implements GLSurfaceView.Renderer {
     int BGColor;
     Context mContext;
 
+    //Projection
+    int muMVPMatrixHandle;
+
     public Renderer(Context context, int color) {
         this.mContext = context;
         BGColor = color;
@@ -88,7 +91,6 @@ public class Renderer implements GLSurfaceView.Renderer {
         glClear(GL_COLOR_BUFFER_BIT);
 
         //Iterate through the drawableList, cannot use enhanced with an iterator if we remove or add to list while iterating
-        //http://stackoverflow.com/questions/8189466/java-util-concurrentmodificationexception
         for (int i = 0; i< DataHolder.getInstance().getDrawableList().size() ; i++) {
             DataHolder.getInstance().getDrawableList().get(i).draw();
         }

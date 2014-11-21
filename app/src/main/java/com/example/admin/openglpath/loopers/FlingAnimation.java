@@ -4,8 +4,6 @@ import com.example.admin.openglpath.data.DataHolder;
 import com.example.admin.openglpath.shapes.Drawable;
 import com.example.admin.openglpath.util.ViewUtils;
 
-import static com.example.admin.openglpath.util.Constants.*;
-
 /**
  *
  * Created by Mark Stanford on 11/20/14.
@@ -13,6 +11,15 @@ import static com.example.admin.openglpath.util.Constants.*;
 public class FlingAnimation implements Animation {
 
     private static final String TAG = "FlingAnimation";
+
+    //Minimum speed in which to show fling
+    public static final float MIN_SPEED = 100f;
+
+    //Gravity is how much the velocity decrements per loop
+    public static final float GRAVITY = 1.01f;
+
+    //The initial resistence to movement
+    public static final float SLUDGE = 2f;
 
     private float x,y, velocityX, velocityY;
     private Drawable drawable;
@@ -22,8 +29,8 @@ public class FlingAnimation implements Animation {
     public FlingAnimation(Drawable drawable, float x, float y, float velocityX, float velocityY) {
         this.x = x;
         this.y = y;
-        this.velocityX = velocityX;
-        this.velocityY = velocityY;
+        this.velocityX = velocityX/SLUDGE;
+        this.velocityY = velocityY/SLUDGE;
         this.drawable = drawable;
     }
 
@@ -53,16 +60,20 @@ public class FlingAnimation implements Animation {
             float velX = ViewUtils.scaleXPixelPerSecondToFloatPerFrame(dh.getWorkspaceView(), velocityX);
             float velY = ViewUtils.scaleYPixelPerSecondToFloatPerFrame(dh.getWorkspaceView(), velocityY);
 
+            //Set the new values
+            x = x + velX;
+            y = y - velY;
+
             //Add velocity to the object
-            drawable.setXYZ(x + velX*2, y - velY, 1);
+            drawable.setXYZ(x, y, 1);
 
             //Decrement the velocity by the gravity factor
             if (Math.abs(velocityX) > MIN_SPEED) {
-                velocityX *= GRAVITY;
+                velocityX = velocityX / GRAVITY;
             }
 
             if (Math.abs(velocityX) > MIN_SPEED) {
-                velocityY *= GRAVITY;
+                velocityY = velocityY / GRAVITY;
             }
 
             return true;

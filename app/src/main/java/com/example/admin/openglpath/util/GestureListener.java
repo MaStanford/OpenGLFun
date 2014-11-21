@@ -60,7 +60,7 @@ public class GestureListener extends android.view.GestureDetector.SimpleOnGestur
     public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
 
         DataHolder dh = DataHolder.getInstance();
-        if(dh.isCurrentlySelectedDrawable()){
+        if(dh.isCurrentlySelectedDrawable() && e2.getAction() != MotionEvent.ACTION_UP){
             //We have a currently selected drawable. We need to change it's x,y;
             float x, y;
             float scaled[] = ViewUtils.scaleTouchEvent(dh.getWorkspaceView(), e2.getX(), e2.getY(), 2);
@@ -70,11 +70,11 @@ public class GestureListener extends android.view.GestureDetector.SimpleOnGestur
             DataHolder.getInstance().getCurrentSelectedDrawable().setXYZ(x, y, 1);
         }
 
-        //Check to see if we have an up gesture
-        if(e2.getAction() == MotionEvent.ACTION_UP){
-            Log.d(TAG, "onScroll action up == " + (e2.getAction() == MotionEvent.ACTION_UP));
-            dh.clearCurrentSelectedDrawable();
-        }
+//        //Check to see if we have an up gesture
+//        if(e2.getAction() == MotionEvent.ACTION_UP){
+//            Log.d(TAG, "onScroll action up == " + (e2.getAction() == MotionEvent.ACTION_UP));
+//            dh.clearCurrentSelectedDrawable();
+//        }
 
         return super.onScroll(e1, e2, distanceX, distanceY);
     }
@@ -97,14 +97,13 @@ public class GestureListener extends android.view.GestureDetector.SimpleOnGestur
         if(e2.getAction() == MotionEvent.ACTION_UP){
             //Make sure we have a drawable under our touch
             if(dh.isCurrentlySelectedDrawable()){
-                Log.d(TAG, "onFlingUp detected: " + velocityX + ":" + velocityY);
                 float x, y;
                 float scaled[] = ViewUtils.scaleTouchEvent(dh.getWorkspaceView(), e2.getX(), e2.getY(), 2);
                 x = scaled[0];
                 y = scaled[1];
-
+                Log.d(TAG, String.format("onFlingUp X:Y %f:%f velX:velY %f:%f", x,y, velocityX, velocityY));
                 //Fling the object!
-                FlingAnimation fling = new FlingAnimation(dh.getCurrentSelectedDrawable(), x, y, velocityY, velocityY);
+                FlingAnimation fling = new FlingAnimation(dh.getCurrentSelectedDrawable(), x, y, velocityX, velocityY);
                 dh.getAnimationMap().put(dh.getCurrentSelectedDrawable(), fling);
             }
         }

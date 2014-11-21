@@ -9,6 +9,8 @@ import com.example.admin.openglpath.util.ShaderType;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+import static android.opengl.GLES20.glGetUniformLocation;
+
 /**
  * Created by Mark Stanford on 11/18/14.
  */
@@ -50,19 +52,22 @@ public class Card extends Drawable {
         GLES20.glUseProgram(mProgram);
 
         // get handle to vertex shader's vPosition member from the shader
-        mPositionHandle = GLES20.glGetAttribLocation(mProgram, "vPosition");
-
-        // Enable a handle to the triangle vertices
-        GLES20.glEnableVertexAttribArray(mPositionHandle);
+        mPositionHandle = GLES20.glGetAttribLocation(mProgram, VERTEX_POSITION);
 
         // Prepare the triangle coordinate data
         GLES20.glVertexAttribPointer(mPositionHandle, COORDS_PER_VERTEX, GLES20.GL_FLOAT, false, vertexStride, vertexBuffer);
 
+        // Enable the attribute in the shader
+        GLES20.glEnableVertexAttribArray(mPositionHandle);
+
         // get handle to fragment shader's vColor member from the shader
-        mColorHandle = GLES20.glGetUniformLocation(mProgram, "vColor");
+        mColorHandle = GLES20.glGetUniformLocation(mProgram, FRAGMENT_COLOR);
 
         // Set mColor for drawing the triangle
         GLES20.glUniform4fv(mColorHandle, 1, mColor, 0);
+
+        //Get the handle to projection matrix
+        muMVPMatrixHandle = glGetUniformLocation(mProgram, VERTEX_MATRIX);
 
         // Draw the triangle
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, (shapeCoords.length / COORDS_PER_VERTEX));

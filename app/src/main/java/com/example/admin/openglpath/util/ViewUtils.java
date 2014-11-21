@@ -2,7 +2,7 @@ package com.example.admin.openglpath.util;
 
 import android.view.View;
 
-import static com.example.admin.openglpath.util.Constants.*;
+import static com.example.admin.openglpath.loopers.AnimationLoop.*;
 
 /**
  * Created by Mark Stanford on 11/19/14.
@@ -35,10 +35,10 @@ public class ViewUtils {
      * @return
      */
     public static float scaleXPixelPerSecondToFloatPerFrame(View parentView, float fling){
-        int parentWidth = parentView.getWidth();
+        float parentWidth = parentView.getWidth();
 
-        int waitsPerSecond = (SECOND/ WAIT);
-        return (fling/(float)waitsPerSecond) / (float)(parentWidth);
+        float waitsPerSecond = (SECOND/ WAIT);
+        return (fling/waitsPerSecond) / (parentWidth);
     }
 
     /**
@@ -49,9 +49,9 @@ public class ViewUtils {
      * @return
      */
     public static float scaleYPixelPerSecondToFloatPerFrame(View parentView, float fling){
-        int parentHeight = -parentView.getHeight();
+        float parentHeight = parentView.getHeight();
 
-        int waitsPerSecond = (SECOND/ WAIT);
-        return (fling/(float)waitsPerSecond) / (float)(parentHeight);
+        float waitsPerSecond = (SECOND / WAIT);
+        return (fling/waitsPerSecond) / (parentHeight);
     }
 }

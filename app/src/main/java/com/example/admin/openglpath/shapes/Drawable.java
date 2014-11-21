@@ -9,6 +9,13 @@ import java.nio.FloatBuffer;
  */
 public abstract class Drawable implements IDrawable{
 
+    /**
+     * Shader locations
+     */
+    public static final String VERTEX_POSITION  = "vPosition";
+    public static final String VERTEX_MATRIX    = "uMVPMatrix";
+    public static final String FRAGMENT_COLOR   = "vColor";
+
     //The size of the shape
     protected float mSize = .2f;
 
@@ -33,11 +40,14 @@ public abstract class Drawable implements IDrawable{
     //handle to vertex shader's vPosition member
     protected int mPositionHandle;
 
-    //How many bytes for each vertex
+    //How many bytes before the start of each vertex.  Use this if you store more than just vertex data
     protected int vertexStride = COORDS_PER_VERTEX * 4; //4 are how many bytes in a float
 
     //handle to fragment shader's vColor member
     protected int mColorHandle;
+
+    //The handle to the projection matrix
+    int muMVPMatrixHandle;
 
     // number of coordinates per vertex in this array
     static final int COORDS_PER_VERTEX = 3;
