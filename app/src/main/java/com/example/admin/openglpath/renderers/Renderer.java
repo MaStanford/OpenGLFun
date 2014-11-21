@@ -7,7 +7,7 @@ import android.util.Log;
 
 import com.example.admin.openglpath.R;
 import com.example.admin.openglpath.data.DataHolder;
-import com.example.admin.openglpath.loopers.FlingLoop;
+import com.example.admin.openglpath.loopers.AnimationLoop;
 import com.example.admin.openglpath.util.ColorUtil;
 import com.example.admin.openglpath.util.ShaderHelper;
 import com.example.admin.openglpath.util.ShaderType;
@@ -54,7 +54,7 @@ public class Renderer implements GLSurfaceView.Renderer {
         ShaderHelper.getInstance().putCompiledShader(ShaderType.Triangle, program);
 
         //Start the animation loop
-        FlingLoop.doRun();
+        AnimationLoop.doRun();
     }
 
     public void setBGColor(int color) {

@@ -5,7 +5,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 
 import com.example.admin.openglpath.data.DataHolder;
-import com.example.admin.openglpath.loopers.FlingRunnable;
+import com.example.admin.openglpath.loopers.FlingAnimation;
 import com.example.admin.openglpath.shapes.Card;
 import com.example.admin.openglpath.shapes.Drawable;
 
@@ -104,9 +104,8 @@ public class GestureListener extends android.view.GestureDetector.SimpleOnGestur
                 y = scaled[1];
 
                 //Fling the object!
-                FlingRunnable fling = new FlingRunnable(dh.getCurrentSelectedDrawable(), x, y, velocityY, velocityY);
-                dh.getFlingMap().put(dh.getCurrentSelectedDrawable(), fling);
-                dh.getFlingQueue().add(fling);
+                FlingAnimation fling = new FlingAnimation(dh.getCurrentSelectedDrawable(), x, y, velocityY, velocityY);
+                dh.getAnimationMap().put(dh.getCurrentSelectedDrawable(), fling);
             }
         }
 
@@ -136,8 +135,8 @@ public class GestureListener extends android.view.GestureDetector.SimpleOnGestur
                 mcurrentDrawable = drawable;
 
                 //Check to see if we are flinging.  If we are then we need to kill it.
-                if(dh.getFlingMap().containsKey(drawable)){
-                    dh.getFlingMap().get(drawable).kill();
+                if(dh.getAnimationMap().containsKey(drawable)){
+                    dh.getAnimationMap().get(drawable).stop();
                 }
 
             } else { //TODO: we need to do a check to see what we are supposed to draw here

@@ -32,14 +32,13 @@ public class ViewUtils {
      * Scales a fling in pixels per second to a float per second
      * @param parentView
      * @param fling
-     * @param scale How many units are in the workspace. I.E -1 to 1 is a scale of 2
      * @return
      */
-    public static float scaleXPixelPerSecondToFloat(View parentView, float fling, int scale){
+    public static float scaleXPixelPerSecondToFloat(View parentView, float fling){
         int parentWidth = parentView.getWidth();
 
         int waitsPerSecond = (SECOND/ WAIT);
-        return (fling/waitsPerSecond) / (parentWidth/scale);
+        return (fling/waitsPerSecond) / (parentWidth);
     }
 
     /**
@@ -47,13 +46,12 @@ public class ViewUtils {
      *
      * @param parentView
      * @param fling
-     * @param scale How many units are in the workspace . I.E -1 to 1 is a scale of 2
      * @return
      */
-    public static float scaleYPixelPerSecondToFloat(View parentView, float fling, int scale){
+    public static float scaleYPixelPerSecondToFloat(View parentView, float fling){
         int parentHeight = -parentView.getHeight();
 
         int waitsPerSecond = (SECOND/ WAIT);
-        return (fling/waitsPerSecond) / (parentHeight/scale);
+        return (fling/waitsPerSecond) / (parentHeight);
     }
 }
