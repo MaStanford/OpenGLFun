@@ -5,13 +5,16 @@ import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 
 import com.example.admin.openglpath.R;
 import com.example.admin.openglpath.data.DataHolder;
-import com.example.admin.openglpath.util.GestureListener;
+import com.example.admin.openglpath.gestures.GestureListener;
+import com.example.admin.openglpath.gestures.ScaleListener;
 
 public class CustomGLView extends GLSurfaceView implements View.OnTouchListener{
     public static final String TAG = "CustomGLView";
@@ -30,6 +33,11 @@ public class CustomGLView extends GLSurfaceView implements View.OnTouchListener{
 
     //Gesture detector for detecting stuffs
     final GestureDetector mGestureDetector;
+
+    //Gesture detector for scaling motions
+    private ScaleGestureDetector mScaleDetector;
+
+    private int fingerDown = 0;
 
     public CustomGLView(Context context) {
         super(context);
@@ -63,6 +71,8 @@ public class CustomGLView extends GLSurfaceView implements View.OnTouchListener{
 
         //Init gdt
         mGestureDetector = new GestureDetector(getContext(), new GestureListener(context));
+
+        mScaleDetector = new ScaleGestureDetector(getContext(), new ScaleListener(context));
 
         //Add ourselves to the dataholder
         DataHolder.getInstance().setWorkspaceView(this);
@@ -99,8 +109,26 @@ public class CustomGLView extends GLSurfaceView implements View.OnTouchListener{
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
 
-        //Send the event out to the gesture detector
-        mGestureDetector.onTouchEvent(motionEvent);
+        if(motionEvent.getActionMasked() == MotionEvent.ACTION_POINTER_DOWN) {
+            Log.d(TAG, "MotionEvent.ACTION_POINTER_DOWN");
+            fingerDown++;
+        }
+
+        if(motionEvent.getActionMasked() == MotionEvent.ACTION_POINTER_UP) {
+            Log.d(TAG, "MotionEvent.ACTION_POINTER_UP");
+            fingerDown--;
+        }
+
+        if(motionEvent.getPointerCount() >= 2) {
+            //Check to see if we are scaling
+            mScaleDetector.onTouchEvent(motionEvent);
+        }
+
+
+        if(motionEvent.getPointerCount() < 2) {
+            //Send the event out to the gesture detector
+            mGestureDetector.onTouchEvent(motionEvent);
+        }
 
         return true;
     }
