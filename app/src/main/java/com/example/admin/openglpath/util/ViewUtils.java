@@ -34,11 +34,11 @@ public class ViewUtils {
      * @param fling
      * @return
      */
-    public static float scaleXPixelPerSecondToFloat(View parentView, float fling){
+    public static float scaleXPixelPerSecondToFloatPerFrame(View parentView, float fling){
         int parentWidth = parentView.getWidth();
 
         int waitsPerSecond = (SECOND/ WAIT);
-        return (fling/waitsPerSecond) / (parentWidth);
+        return (fling/(float)waitsPerSecond) / (float)(parentWidth);
     }
 
     /**
@@ -48,10 +48,10 @@ public class ViewUtils {
      * @param fling
      * @return
      */
-    public static float scaleYPixelPerSecondToFloat(View parentView, float fling){
+    public static float scaleYPixelPerSecondToFloatPerFrame(View parentView, float fling){
         int parentHeight = -parentView.getHeight();
 
         int waitsPerSecond = (SECOND/ WAIT);
-        return (fling/waitsPerSecond) / (parentHeight);
+        return (fling/(float)waitsPerSecond) / (float)(parentHeight);
     }
 }

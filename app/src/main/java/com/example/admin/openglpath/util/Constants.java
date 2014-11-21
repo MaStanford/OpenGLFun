@@ -5,11 +5,11 @@ package com.example.admin.openglpath.util;
  */
 public class Constants {
 
-    //Gravity is how much the velocity decrements per loop
-    public static final float GRAVITY = 25;
+    //Minimum speed in which to show fling
+    public static final float MIN_SPEED = 100f;
 
-    //Factor for how hard it is to move through the screen
-    public static final float SLUDGE = 1f;
+    //Gravity is how much the velocity decrements per loop
+    public static final float GRAVITY = .9f;
 
     /**
      *  Wait is how long the thread should sleep.  17 ms is 60fps

@@ -26,7 +26,7 @@ public class AnimationLoop {
                     for(int i = 0; i < animations.length; i++){
                         Animation animation = animations[i];
                         //Do next animation frame and then check if it returned false
-                        if(!animation.doNext()){
+                        if(animation != null && !animation.doNext()){
                             //Remove the finished animation
                             DataHolder.getInstance().getAnimationMap().remove(animation.getDrawable());
                         }

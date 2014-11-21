@@ -12,7 +12,7 @@ import static com.example.admin.openglpath.util.Constants.*;
  */
 public class FlingAnimation implements Animation {
 
-    private static final String TAG = "FlingAnimate";
+    private static final String TAG = "FlingAnimation";
 
     private float x,y, velocityX, velocityY;
     private Drawable drawable;
@@ -46,37 +46,28 @@ public class FlingAnimation implements Animation {
      */
     @Override
     public boolean doNext() {
-        //Continue to fling until gravity makes velocity 0 or below
-        if((Math.abs(velocityX) > GRAVITY*2 || Math.abs(velocityY) > GRAVITY*2) && doRun) {
+        //Continue to fling until gravity makes velocity less than min velocity
+        if(((Math.abs(velocityX) > MIN_SPEED) || (Math.abs(velocityX) > MIN_SPEED)) && doRun) {
 
             //Scale the velocity
-            float velX = ViewUtils.scaleXPixelPerSecondToFloat(dh.getWorkspaceView(), velocityX);
-            float velY = ViewUtils.scaleYPixelPerSecondToFloat(dh.getWorkspaceView(), velocityY);
-
-            velX *= SLUDGE;
-            velY *= SLUDGE;
+            float velX = ViewUtils.scaleXPixelPerSecondToFloatPerFrame(dh.getWorkspaceView(), velocityX);
+            float velY = ViewUtils.scaleYPixelPerSecondToFloatPerFrame(dh.getWorkspaceView(), velocityY);
 
             //Add velocity to the object
-            drawable.setXYZ(x + velX, y - velY, 1);
+            drawable.setXYZ(x + velX*2, y - velY, 1);
 
             //Decrement the velocity by the gravity factor
-            if (velocityX > GRAVITY * 2) {
-                velocityX = velocityX - GRAVITY;
-            } else if (velocityX < -GRAVITY * 2) {
-                velocityX = velocityX + GRAVITY;
+            if (Math.abs(velocityX) > MIN_SPEED) {
+                velocityX *= GRAVITY;
             }
 
-            if (velocityY > GRAVITY * 2) {
-                velocityY = velocityY - GRAVITY;
-            } else if (velocityX < -GRAVITY * 2) {
-                velocityY = velocityY + GRAVITY;
+            if (Math.abs(velocityX) > MIN_SPEED) {
+                velocityY *= GRAVITY;
             }
 
             return true;
         }else{
             return false;
         }
-
-
     }
 }
