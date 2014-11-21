@@ -5,8 +5,11 @@ import android.util.Log;
 import android.view.MotionEvent;
 
 import com.example.admin.openglpath.data.DataHolder;
+import com.example.admin.openglpath.loopers.FlingRunnable;
 import com.example.admin.openglpath.shapes.Card;
 import com.example.admin.openglpath.shapes.Drawable;
+
+import java.util.Random;
 
 /**
  * Use this to create or modify object, select objects or w/e
@@ -48,6 +51,8 @@ public class GestureListener extends android.view.GestureDetector.SimpleOnGestur
         x = scaled[0];
         y = scaled[1];
         Log.d(TAG, "onLongPress detected: " + x + ":" + y);
+
+        dh.getDrawableList().clear();
         super.onLongPress(e);
     }
 
@@ -88,10 +93,21 @@ public class GestureListener extends android.view.GestureDetector.SimpleOnGestur
             dh.getCurrentSelectedDrawable().setXYZ(x, y , 1);
         }
 
-        //Check to see if we have an up gesture
+        //Check to see if we have an up gesture and then calculate the fling
         if(e2.getAction() == MotionEvent.ACTION_UP){
-            Log.d(TAG, "onFling action up == " + (e2.getAction() == MotionEvent.ACTION_UP));
-            dh.clearCurrentSelectedDrawable();
+            //Make sure we have a drawable under our touch
+            if(dh.isCurrentlySelectedDrawable()){
+                Log.d(TAG, "onFlingUp detected: " + velocityX + ":" + velocityY);
+                float x, y;
+                float scaled[] = ViewUtils.scaleTouchEvent(dh.getWorkspaceView(), e2.getX(), e2.getY(), 2);
+                x = scaled[0];
+                y = scaled[1];
+
+                //Fling the object!
+                FlingRunnable fling = new FlingRunnable(dh.getCurrentSelectedDrawable(), x, y, velocityY, velocityY);
+                dh.getFlingMap().put(dh.getCurrentSelectedDrawable(), fling);
+                dh.getFlingQueue().add(fling);
+            }
         }
 
         return super.onFling(e1, e2, velocityX, velocityY);
@@ -105,7 +121,6 @@ public class GestureListener extends android.view.GestureDetector.SimpleOnGestur
     @Override
     public boolean onDown(MotionEvent e) {
 
-        //TODO: weird issue, there must be a better way
         if(!isDoubleLastCommand) {
             DataHolder dh = DataHolder.getInstance();
             float x, y;
@@ -119,8 +134,14 @@ public class GestureListener extends android.view.GestureDetector.SimpleOnGestur
             if (drawable != null) {
                 dh.setCurrentSelectedDrawable(drawable);
                 mcurrentDrawable = drawable;
+
+                //Check to see if we are flinging.  If we are then we need to kill it.
+                if(dh.getFlingMap().containsKey(drawable)){
+                    dh.getFlingMap().get(drawable).kill();
+                }
+
             } else { //TODO: we need to do a check to see what we are supposed to draw here
-                Card newCard = new Card(x, y, 1, dh.getCurrentSelectedColor());
+                Card newCard = new Card(x, y, 1, new Random().nextInt(Integer.MAX_VALUE));
                 dh.setCurrentSelectedDrawable(newCard);
                 dh.addDrawable(newCard);
                 mcurrentDrawable = newCard;

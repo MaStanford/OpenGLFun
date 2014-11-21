@@ -2,6 +2,8 @@ package com.example.admin.openglpath.util;
 
 import android.view.View;
 
+import static com.example.admin.openglpath.util.Constants.*;
+
 /**
  * Created by Mark Stanford on 11/19/14.
  */
@@ -24,5 +26,34 @@ public class ViewUtils {
         float scaledY = ((parentHeight - touchY) / (parentHeight/scaleOver)) - (scaleOver/2);
 
         return new float[]{scaledX,scaledY};
+    }
+
+    /**
+     * Scales a fling in pixels per second to a float per second
+     * @param parentView
+     * @param fling
+     * @param scale How many units are in the workspace. I.E -1 to 1 is a scale of 2
+     * @return
+     */
+    public static float scaleXPixelPerSecondToFloat(View parentView, float fling, int scale){
+        int parentWidth = parentView.getWidth();
+
+        int waitsPerSecond = (SECOND/ WAIT);
+        return (fling/waitsPerSecond) / (parentWidth/scale);
+    }
+
+    /**
+     * Scales a fling in pixels per second to a float per second
+     *
+     * @param parentView
+     * @param fling
+     * @param scale How many units are in the workspace . I.E -1 to 1 is a scale of 2
+     * @return
+     */
+    public static float scaleYPixelPerSecondToFloat(View parentView, float fling, int scale){
+        int parentHeight = -parentView.getHeight();
+
+        int waitsPerSecond = (SECOND/ WAIT);
+        return (fling/waitsPerSecond) / (parentHeight/scale);
     }
 }

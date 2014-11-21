@@ -3,11 +3,15 @@ package com.example.admin.openglpath.data;
 import android.opengl.GLSurfaceView;
 import android.util.Log;
 
+import com.example.admin.openglpath.loopers.FlingRunnable;
 import com.example.admin.openglpath.shapes.Drawable;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Queue;
 
 /**
  * This is just to hold data until we design a better data structure
@@ -46,10 +50,20 @@ public class DataHolder {
     private int mCurrentSelectedColor = 0;
 
     /**
+     * Map for drawables and the runnable animating their fling.
+     */
+    private Map<Drawable, FlingRunnable> mFlingMap;
+    //Supporting structure for the flingrunnables
+    private Queue<FlingRunnable> mFlingQueue;
+
+    /**
      * Private constructor for our singleton pattern
      */
     private DataHolder(){
-        mDrawableList = Collections.synchronizedList(new ArrayList<Drawable>());
+        mDrawableList = new ArrayList<Drawable>();
+        mFlingMap =  new HashMap<Drawable, FlingRunnable>();
+        mFlingQueue =  new LinkedList<FlingRunnable>();
+
         mCurrentSelectedColor = 255; //Blue
     }
 
@@ -156,5 +170,21 @@ public class DataHolder {
         Log.d(TAG, "getIntersectingDrawable == " + (currentTopDrawable != null));
 
         return currentTopDrawable;
+    }
+
+    public Map<Drawable, FlingRunnable> getFlingMap() {
+        return mFlingMap;
+    }
+
+    public void setFlingMap(Map<Drawable, FlingRunnable> mFlingMap) {
+        this.mFlingMap = mFlingMap;
+    }
+
+    public Queue<FlingRunnable> getFlingQueue() {
+        return mFlingQueue;
+    }
+
+    public void setFlingQueue(Queue<FlingRunnable> mFlingQueue) {
+        this.mFlingQueue = mFlingQueue;
     }
 }

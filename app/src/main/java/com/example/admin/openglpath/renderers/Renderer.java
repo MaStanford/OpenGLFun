@@ -1,11 +1,13 @@
 package com.example.admin.openglpath.renderers;
 
 import android.content.Context;
+import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.util.Log;
 
 import com.example.admin.openglpath.R;
 import com.example.admin.openglpath.data.DataHolder;
+import com.example.admin.openglpath.loopers.FlingLoop;
 import com.example.admin.openglpath.util.ColorUtil;
 import com.example.admin.openglpath.util.ShaderHelper;
 import com.example.admin.openglpath.util.ShaderType;
@@ -50,6 +52,9 @@ public class Renderer implements GLSurfaceView.Renderer {
         int program = ShaderHelper.getInstance().attachShader(vertexShader,fragmentShader);
 
         ShaderHelper.getInstance().putCompiledShader(ShaderType.Triangle, program);
+
+        //Start the animation loop
+        FlingLoop.doRun();
     }
 
     public void setBGColor(int color) {
@@ -74,7 +79,7 @@ public class Renderer implements GLSurfaceView.Renderer {
         // Set the OpenGL viewport to fill the entire surface.
         glViewport(0, 0, width, height);
 
-
+        GLES20.glClearDepthf(1f);
     }
 
     @Override
