@@ -6,8 +6,8 @@ import android.view.ScaleGestureDetector;
 
 import com.example.admin.openglpath.data.DataHolder;
 import com.example.admin.openglpath.loopers.FlingAnimation;
-import com.example.admin.openglpath.shapes.Card;
 import com.example.admin.openglpath.shapes.Drawable;
+import com.example.admin.openglpath.shapes.Stroke;
 import com.example.admin.openglpath.util.ViewUtils;
 
 import java.util.Random;
@@ -33,7 +33,7 @@ public class GestureHandler {
 
     /**
      * Returns the singleton
-     * @return
+     * @return The GestureHandler singleton reference
      */
     public static GestureHandler getInstance(){
         return instanceHolder.INSTANCE;
@@ -45,7 +45,7 @@ public class GestureHandler {
     DataHolder dh = DataHolder.getInstance();
 
     //The previously made object in case we have a double tap or long
-    Drawable mcurrentDrawable;
+    Drawable mPreviouslyMadeObject;
 
     //How many fingers are down right now
     private boolean isScaleGesture = false;
@@ -55,6 +55,12 @@ public class GestureHandler {
      */
     boolean isDoubleLastCommand = false;
 
+    //Fix the onDown creating when scaling
+    private boolean isDownLastCommand = false;
+
+    //Maintian state of strokes
+    private boolean isCurrentObjectStroke = false;
+
     public void onScale(ScaleGestureDetector detector) {
         dh.clearCurrentSelectedDrawable();
         Log.d(TAG, "onScale");
@@ -62,6 +68,15 @@ public class GestureHandler {
 
     public void onScaleBegin(ScaleGestureDetector detector) {
         isScaleGesture = true;
+
+        //Delete the created object from the onDown
+        if(isDownLastCommand) {
+            dh.removeDrawable(mPreviouslyMadeObject);
+            dh.clearCurrentSelectedDrawable();
+            mPreviouslyMadeObject = null;
+            isDownLastCommand = false;
+        }
+
         Log.d(TAG, "onScaleBegin");
     }
 
@@ -111,12 +126,28 @@ public class GestureHandler {
             y = scaled[1];
             Log.d(TAG, "onScroll detected: " + x + ":" + y);
             DataHolder.getInstance().getCurrentSelectedDrawable().setXYZ(x, y, 1);
+        }else{
+            //We may be able to test drawing lines here.
+            float x, y;
+            float scaled[] = ViewUtils.scaleTouchEvent(dh.getWorkspaceView(), e2.getX(), e2.getY(), 2);
+            x = scaled[0];
+            y = scaled[1];
+            if(isCurrentObjectStroke){
+                ((Stroke)dh.getCurrentSelectedDrawable()).addPoint(x,y,0);
+                isCurrentObjectStroke = true;
+            }else{
+                Stroke stroke = new Stroke(x,y,0,new Random().nextInt(Integer.MAX_VALUE));
+                dh.setCurrentSelectedDrawable(stroke);
+                dh.addDrawable(stroke);
+                mPreviouslyMadeObject = stroke;
+            }
         }
 
         //Check to see if we have an up gesture
         if(e2.getAction() == MotionEvent.ACTION_UP){
             Log.d(TAG, "onScroll action up == " + (e2.getAction() == MotionEvent.ACTION_UP));
             dh.clearCurrentSelectedDrawable();
+            isCurrentObjectStroke = false;
         }
     }
 
@@ -167,8 +198,8 @@ public class GestureHandler {
         if(isScaleGesture)
             return;
 
+        isDownLastCommand = true;
 
-        DataHolder dh = DataHolder.getInstance();
         float x, y;
         float scaled[] = ViewUtils.scaleTouchEvent(dh.getWorkspaceView(), e.getX(), e.getY(), 2);
         x = scaled[0];
@@ -179,14 +210,21 @@ public class GestureHandler {
         Drawable drawable = dh.getIntersectingDrawable(x, y);
         if (drawable != null) {
             dh.setCurrentSelectedDrawable(drawable);
-            mcurrentDrawable = drawable;
+            mPreviouslyMadeObject = drawable;
 
             //Check to see if we are flinging.  If we are then we need to kill it.
             if(dh.getAnimationMap().containsKey(drawable)){
                 dh.getAnimationMap().get(drawable).stop();
             }
 
+        } else {
+//            Card newCard = new Card(x, y, 1, new Random().nextInt(Integer.MAX_VALUE));
+//            dh.setCurrentSelectedDrawable(newCard);
+//            dh.addDrawable(newCard);
+//            mPreviouslyMadeObject = newCard;
         }
+
+        isDownLastCommand = true;
         isDoubleLastCommand = false;
     }
 
@@ -196,8 +234,6 @@ public class GestureHandler {
             return;
 
         isDoubleLastCommand = true;
-
-        DataHolder dh = DataHolder.getInstance();
 
         float x, y;
         float scaled[] = ViewUtils.scaleTouchEvent(dh.getWorkspaceView(), e.getX(), e.getY(), 2);
@@ -209,16 +245,16 @@ public class GestureHandler {
         //Check to see if we intersect an object here.  If not then create one.
         Drawable drawable = dh.getIntersectingDrawable(x,y);
         if(drawable != null) {
-            if(mcurrentDrawable != null) {
-                dh.removeDrawable(mcurrentDrawable);
-                mcurrentDrawable = null;
+            if(mPreviouslyMadeObject != null) {
+                dh.removeDrawable(mPreviouslyMadeObject);
+                mPreviouslyMadeObject = null;
             }
 
             dh.removeDrawable(drawable);
             dh.clearCurrentSelectedDrawable();
         }else{
-            dh.removeDrawable(mcurrentDrawable);
-            mcurrentDrawable = null;
+            dh.removeDrawable(mPreviouslyMadeObject);
+            mPreviouslyMadeObject = null;
             dh.clearCurrentSelectedDrawable();
         }
     }
@@ -237,31 +273,6 @@ public class GestureHandler {
             return;
 
         Log.d(TAG, "onSingleTapConfirmed detected");
-
-        DataHolder dh = DataHolder.getInstance();
-        float x, y;
-        float scaled[] = ViewUtils.scaleTouchEvent(dh.getWorkspaceView(), e.getX(), e.getY(), 2);
-        x = scaled[0];
-        y = scaled[1];
-        Log.d(TAG, "onDown detected: " + x + ":" + y);
-
-        //Check to see if we intersect an object here.  If not then create one.
-        Drawable drawable = dh.getIntersectingDrawable(x, y);
-        if (drawable != null) {
-            dh.setCurrentSelectedDrawable(drawable);
-            mcurrentDrawable = drawable;
-
-            //Check to see if we are flinging.  If we are then we need to kill it.
-            if(dh.getAnimationMap().containsKey(drawable)){
-                dh.getAnimationMap().get(drawable).stop();
-            }
-
-        } else {
-            Card newCard = new Card(x, y, 1, new Random().nextInt(Integer.MAX_VALUE));
-            dh.setCurrentSelectedDrawable(newCard);
-            dh.addDrawable(newCard);
-            mcurrentDrawable = newCard;
-        }
     }
 
 }
