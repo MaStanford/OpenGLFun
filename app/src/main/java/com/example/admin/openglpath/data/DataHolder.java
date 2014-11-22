@@ -3,6 +3,7 @@ package com.example.admin.openglpath.data;
 import android.opengl.GLSurfaceView;
 import android.util.Log;
 
+import com.example.admin.openglpath.gestures.GestureHandler;
 import com.example.admin.openglpath.loopers.Animation;
 import com.example.admin.openglpath.shapes.Drawable;
 
@@ -51,6 +52,11 @@ public class DataHolder {
      * Map for drawables and the runnable animating their fling.
      */
     private Map<Drawable, Animation> mAnimationMap;
+
+    /**
+     * Current drawable the user has selected to draw
+     */
+    private int mCurrentShapeToDraw = GestureHandler.CARD;
 
     /**
      * Private constructor for our singleton pattern
@@ -172,5 +178,13 @@ public class DataHolder {
 
     public void setAnimationMap(Map<Drawable, Animation> mFlingMap) {
         this.mAnimationMap = mFlingMap;
+    }
+
+    public int getmCurrentShapeToDraw() {
+        return mCurrentShapeToDraw;
+    }
+
+    public void setmCurrentShapeToDraw(int mCurrentShapeToDraw) {
+        this.mCurrentShapeToDraw = mCurrentShapeToDraw;
     }
 }

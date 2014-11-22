@@ -5,6 +5,9 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.example.admin.openglpath.data.DataHolder;
+import com.example.admin.openglpath.gestures.GestureHandler;
+
 public class MainActivity extends Activity {
 
     private static final String TAG = "MainActivity";
@@ -29,9 +32,16 @@ public class MainActivity extends Activity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch(id){
+            case R.id.action_card:
+                DataHolder.getInstance().setmCurrentShapeToDraw(GestureHandler.CARD);
+                break;
+            case R.id.action_stroke:
+                DataHolder.getInstance().setmCurrentShapeToDraw(GestureHandler.STROKE);
+                break;
+            case R.id.action_point:
+                DataHolder.getInstance().setmCurrentShapeToDraw(GestureHandler.STROKE_POINTS);
+                break;
         }
 
         return super.onOptionsItemSelected(item);

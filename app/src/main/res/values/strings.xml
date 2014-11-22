@@ -4,5 +4,8 @@
     <string name="app_name">OpenGLPath</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="action_card">Draw CARD</string>
+    <string name="action_stroke">Draw Stroke</string>
+    <string name="action_point">Draw Stroke2</string>
 
 </resources>
