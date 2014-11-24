@@ -3,14 +3,13 @@ package com.example.admin.openglpath.renderers;
 import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
-import android.util.Log;
 
 import com.example.admin.openglpath.R;
 import com.example.admin.openglpath.data.DataHolder;
 import com.example.admin.openglpath.loopers.AnimationLoop;
 import com.example.admin.openglpath.util.ColorUtil;
 import com.example.admin.openglpath.util.ShaderHelper;
-import com.example.admin.openglpath.util.ShaderType;
+import com.example.admin.openglpath.shapes.ShaderType;
 import com.example.admin.openglpath.util.TextResourceReader;
 
 import javax.microedition.khronos.egl.EGLConfig;
@@ -27,6 +26,17 @@ import static android.opengl.GLES20.glViewport;
 public class Renderer implements GLSurfaceView.Renderer {
 
     public static String TAG = "Renderer";
+    /**
+     * Shader locations
+     */
+    public static final String VERTEX_POSITION      = "aPosition";
+    public static final String VERTEX_MATRIX        = "uMVPMatrix";
+    public static final String VERTEX_POINT_SIZE    = "aPointSize";
+    public static final String VERTEX_COLOR         = "aColor";
+    public static final String VERTEX_VCOLOR        = "vColor";
+    public static final String FRAGMENT_COLOR       = "uColor";
+    public static final String FRAGMENT_VCOLOR      = "vColor";
+
 
     int BGColor;
     Context mContext;
@@ -44,17 +54,31 @@ public class Renderer implements GLSurfaceView.Renderer {
         clearColor();
 
         //This is where we will compile the shader for now TODO: Move this to loading screen
+
+        //Logic for simple shader
         String vertexShaderSource = TextResourceReader.readTextFileFromResource(mContext, R.raw.simple_vertex_shader);
         String fragmentShaderSource = TextResourceReader .readTextFileFromResource(mContext, R.raw.simple_fragment_shader);
-
-        Log.d(TAG, vertexShaderSource + fragmentShaderSource);
-
         int vertexShader = ShaderHelper.getInstance().compileVertexShader(vertexShaderSource);
         int fragmentShader = ShaderHelper.getInstance().compileFragmentShader(fragmentShaderSource);
+        int program = ShaderHelper.getInstance().attachShader(vertexShader,fragmentShader, ShaderType.Card);
+        ShaderHelper.getInstance().putCompiledShader(ShaderType.Card, program);
 
-        int program = ShaderHelper.getInstance().attachShader(vertexShader,fragmentShader);
+        //Logic for shader with color vary
+        String vertexShaderSourceVary = TextResourceReader.readTextFileFromResource(mContext, R.raw.varying_vertex_shader);
+        String fragmentShaderSourceVary = TextResourceReader .readTextFileFromResource(mContext, R.raw.varying_fragment_shader);
+        int vertexShaderVary = ShaderHelper.getInstance().compileVertexShader(vertexShaderSourceVary);
+        int fragmentShaderVary = ShaderHelper.getInstance().compileFragmentShader(fragmentShaderSourceVary);
+        int programVary = ShaderHelper.getInstance().attachShader(vertexShaderVary,fragmentShaderVary, ShaderType.CardVary);
+        ShaderHelper.getInstance().putCompiledShader(ShaderType.CardVary, programVary);
 
-        ShaderHelper.getInstance().putCompiledShader(ShaderType.Triangle, program);
+        //Logic for point shader
+        String vertexShaderSourcePoint = TextResourceReader.readTextFileFromResource(mContext, R.raw.point_vertex_shader);
+        String fragmentShaderSourcePoint = TextResourceReader .readTextFileFromResource(mContext, R.raw.simple_fragment_shader);
+        int vertexShaderPoint = ShaderHelper.getInstance().compileVertexShader(vertexShaderSourcePoint);
+        int fragmentShaderPoint = ShaderHelper.getInstance().compileFragmentShader(fragmentShaderSourcePoint);
+        int programPoint = ShaderHelper.getInstance().attachShader(vertexShaderPoint,fragmentShaderPoint, ShaderType.Point);
+        ShaderHelper.getInstance().putCompiledShader(ShaderType.CardVary, programPoint);
+
 
         //Start the animation loop
         AnimationLoop.doRun();

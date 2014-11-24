@@ -8,7 +8,7 @@ import java.util.List;
  *
  * Created by Mark Stanford on 11/21/14.
  */
-public class Stroke extends Drawable{
+public class StrokeCards extends Drawable{
 
     private static final String TAG = "Stroke";
 
@@ -18,8 +18,7 @@ public class Stroke extends Drawable{
 
     private int shapesColor;
 
-    public Stroke(float x, float y, float z, int color) {
-        super(x, y, z);
+    public StrokeCards(float x, float y, float z, int color) {
 
         this.shapesColor = color;
         strokePoints =  new ArrayList<Float>();
@@ -33,7 +32,7 @@ public class Stroke extends Drawable{
 
     @Override
     public void draw() {
-        generateNewVertices(0,0,0);
+        //generateNewVertices(0,0,0);
         for(int i = 0; i < shapes.size(); i++){
             shapes.get(i).draw();
         }

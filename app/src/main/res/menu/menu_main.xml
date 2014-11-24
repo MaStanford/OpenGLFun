@@ -4,6 +4,6 @@
         android:orderInCategory="101" android:showAsAction="never" />
     <item android:id="@+id/action_stroke" android:title="@string/action_stroke"
         android:orderInCategory="102" android:showAsAction="never" />
-    <item android:id="@+id/action_point" android:title="@string/action_point"
-        android:orderInCategory="100" android:showAsAction="never" />
+    <item android:id="@+id/action_line_size" android:title="@string/action_line_size"
+        android:orderInCategory="103" android:showAsAction="never" />
 </menu>

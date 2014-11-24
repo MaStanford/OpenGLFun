@@ -4,12 +4,15 @@ import android.opengl.GLES20;
 
 import com.example.admin.openglpath.util.ColorUtil;
 import com.example.admin.openglpath.util.ShaderHelper;
-import com.example.admin.openglpath.util.ShaderType;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.example.admin.openglpath.renderers.Renderer.FRAGMENT_COLOR;
+import static com.example.admin.openglpath.renderers.Renderer.VERTEX_MATRIX;
+import static com.example.admin.openglpath.renderers.Renderer.VERTEX_POSITION;
 
 import static android.opengl.GLES20.glGetUniformLocation;
 
@@ -18,32 +21,34 @@ import static android.opengl.GLES20.glGetUniformLocation;
  *
  * Created by Mark Stanford on 11/21/14.
  */
-public class StrokePoints extends Drawable{
+public class StrokeLines extends Drawable{
 
-    private static final String TAG = "Stroke";
+    private static final String TAG = "StrokePoints";
 
     private List<Float> strokePoints;
 
-    public StrokePoints(float x, float y, float z, int color) {
-        super(x, y, z);
+    float mLineWidth = 1f;
+
+    public StrokeLines(float x, float y, float z, float size, int color) {
 
         strokePoints =  new ArrayList<Float>();
         strokePoints.add(x);
         strokePoints.add(y);
         strokePoints.add(z);
 
+        this.mLineWidth = size;
 
         mColor = ColorUtil.getRGBAFromInt(color);
 
         //Get the shader for this shape and the program id where the shader is loaded
-        mShaderType = ShaderType.Triangle;
+        mShaderType = ShaderType.Card;
         mProgram = ShaderHelper.getInstance().getCompiledShaders().get(mShaderType);
 
         //Generating the vertices using the x,y
         generateNewVertices(this.x, this.y, this.z);
 
         // initialize vertex byte buffer for shape coordinates
-        ByteBuffer bb = ByteBuffer.allocateDirect(shapeCoords.length * 4); // (number of coordinate values * 4 bytes per float)
+        ByteBuffer bb = ByteBuffer.allocateDirect(shapeCoords.length * BYTES_FLOAT); // (number of coordinate values * 4 bytes per float)
 
         // use the device hardware's native byte order
         bb.order(ByteOrder.nativeOrder());
@@ -80,11 +85,23 @@ public class StrokePoints extends Drawable{
         //Get the handle to projection matrix
         muMVPMatrixHandle = glGetUniformLocation(mProgram, VERTEX_MATRIX);
 
+        //Make smooth lines
+        GLES20.glEnable(2848);
+
+        //Change line size
+        GLES20.glLineWidth(mLineWidth);
+
         // Draw the triangle
-        GLES20.glDrawArrays(GLES20.GL_POINTS, 0, (shapeCoords.length / COORDS_PER_VERTEX));
+        GLES20.glDrawArrays(GLES20.GL_LINE_STRIP, 0, (shapeCoords.length / COORDS_PER_VERTEX));
 
         // Disable vertex array
         GLES20.glDisableVertexAttribArray(mPositionHandle);
+
+        //Disable smooth lines
+        GLES20.glDisable(GLES20.GL_ALIASED_LINE_WIDTH_RANGE);
+
+        //Revert back to default line width
+        GLES20.glLineWidth(1f);
     }
 
     /**
@@ -123,7 +140,11 @@ public class StrokePoints extends Drawable{
         strokePoints.add(x);
         strokePoints.add(y);
         strokePoints.add(z);
-        generateNewVertices(0,0,0);
+
+        //Make sure we have an even number of points so we don't get wierd artifacts
+        if(strokePoints.size() % 2 == 0){
+            generateNewVertices(0,0,0);
+        }
     }
 
     private static float[] convertFloats(List<Float> floats){

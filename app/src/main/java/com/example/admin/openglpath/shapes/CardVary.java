@@ -16,24 +16,27 @@ import static com.example.admin.openglpath.renderers.Renderer.VERTEX_POSITION;
 /**
  * Created by Mark Stanford on 11/18/14.
  */
-public class Card extends Drawable {
+public class CardVary extends Drawable {
 
-    private static final String TAG = "Card";
+    private static final String TAG = "CardVary";
 
-    public Card(float x, float y, float z, int color) {
+    public CardVary(float x, float y, float z, int color) {
         setXYZ(x,y,z);
+
+        //Change the default coords from 3 to 6 and this also changes the vertex stride.
+        setCoordsPerVertex(6);
 
         mColor = ColorUtil.getRGBAFromInt(color);
 
         //Get the shader for this shape and the program id where the shader is loaded
-        this.mShaderType = ShaderType.Card;
+        mShaderType = ShaderType.CardVary;
         mProgram = ShaderHelper.getInstance().getCompiledShaders().get(mShaderType);
 
         //Generating the vertices using the x,y
-        generateNewVertices(this.x, this.y, this.z);
+        generateNewVertices(x, y, z);
 
         // initialize vertex byte buffer for shape coordinates
-        ByteBuffer bb = ByteBuffer.allocateDirect(shapeCoords.length * 4); // (number of coordinate values * 4 bytes per float)
+        ByteBuffer bb = ByteBuffer.allocateDirect(shapeCoords.length * BYTES_FLOAT); // (number of coordinate values * 4 bytes per float)
 
         // use the device hardware's native byte order
         bb.order(ByteOrder.nativeOrder());
@@ -86,14 +89,14 @@ public class Card extends Drawable {
     protected void generateNewVertices(float x, float y, float z){
         this.shapeCoords = new float[]
                 {
-                //       X           Y              Z          Triangle 1
-                        (x),        (y),           (0.0f),  // top
-                        (x),        (y-mSize),     (0.0f),  // bottom left
-                        (x+mSize),  (y-mSize),     (0.0f),  // bottom right
-                                                            // Triangle 2
-                        (x),        (y),           (0.0f),  // top
-                        (x+mSize),  (y-mSize),     (0.0f),  // bottom left
-                        (x+mSize),  (y),           (0.0f)   // bottom right
+                //       X           Y              Z       R          G           B            Triangle 1
+                        (x),        (y),           (0.0f),  mColor[2], mColor[1] , mColor[0],   // top
+                        (x),        (y-mSize),     (0.0f),  mColor[0], mColor[2] , mColor[1],   // bottom left
+                        (x+mSize),  (y-mSize),     (0.0f),  mColor[1], mColor[0] , mColor[2],   // bottom right
+                                                                                                // Triangle 2
+                        (x),        (y),           (0.0f),  mColor[2], mColor[1] , mColor[0],   // top
+                        (x+mSize),  (y-mSize),     (0.0f),  mColor[0], mColor[2] , mColor[1],   // bottom left
+                        (x+mSize),  (y),           (0.0f),  mColor[1], mColor[0] , mColor[2]    // bottom right
                 };
 
         //Buffer stuff
@@ -121,6 +124,7 @@ public class Card extends Drawable {
 
     @Override
     public void setXYZ(float x, float y, float z) {
+        //Assume we want to drag and create from the center of the object
         x = x - mSize/2;
         y = y + mSize/2;
 

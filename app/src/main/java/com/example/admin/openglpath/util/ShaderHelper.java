@@ -3,10 +3,15 @@ package com.example.admin.openglpath.util;
 import android.opengl.GLES20;
 import android.util.Log;
 
+import com.example.admin.openglpath.shapes.ShaderType;
+
 import java.util.HashMap;
 import java.util.Map;
 
-import static android.opengl.GLES20.*;
+import static android.opengl.GLES20.GL_LINK_STATUS;
+import static android.opengl.GLES20.glCreateShader;
+import static android.opengl.GLES20.glDeleteProgram;
+import static android.opengl.GLES20.glGetProgramiv;
 
 /**
  * Created by Mark Stanford on 11/19/14.
@@ -38,14 +43,13 @@ public class ShaderHelper {
     }
 
     //Map of shaderTypes in the shape to the program id int
-    private Map<ShaderType, Integer> compiledShaders;
+    private Map<ShaderType, Integer> compiledShaders  =  new HashMap<ShaderType, Integer>();
+    ;
 
     /**
      * Links shaders into a program
      */
-    public int attachShader(int vertextShaderID, int fragmentShaderID){
-
-        compiledShaders =  new HashMap<ShaderType, Integer>();
+    public int attachShader(int vertextShaderID, int fragmentShaderID, ShaderType type){
 
         int mProgram = GLES20.glCreateProgram();           // create empty OpenGL ES Program
         GLES20.glAttachShader(mProgram, vertextShaderID);  // add the vertex shader to program
@@ -67,8 +71,7 @@ public class ShaderHelper {
             return 0;
         }
 
-
-        compiledShaders.put(ShaderType.Triangle, mProgram);
+        putCompiledShader(type, mProgram);
 
         return mProgram;
     }
@@ -100,10 +103,10 @@ public class ShaderHelper {
     }
 
     public void setCompiledShaders(Map<ShaderType, Integer> compiledShaders) {
-        this.compiledShaders = compiledShaders;
+        compiledShaders = compiledShaders;
     }
 
     public void putCompiledShader(ShaderType type, int program) {
-        this.compiledShaders.put(type, program);
+        compiledShaders.put(type, program);
     }
 }

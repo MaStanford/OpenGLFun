@@ -5,6 +5,9 @@ package com.example.admin.openglpath.shapes;
  */
 public interface IDrawable {
 
+    //How many bytes in a float
+    static int BYTES_FLOAT = 4;
+
     abstract void draw();
 
     abstract void setXYZ(float x, float y, float z);
@@ -12,4 +15,6 @@ public interface IDrawable {
     abstract void setColor(float[] color);
 
     abstract float doesIntersectXY(float x, float y);
+
+    abstract void setCoordsPerVertex(int coords);
 }

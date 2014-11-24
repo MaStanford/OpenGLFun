@@ -4,12 +4,14 @@ import android.opengl.GLES20;
 
 import com.example.admin.openglpath.util.ColorUtil;
 import com.example.admin.openglpath.util.ShaderHelper;
-import com.example.admin.openglpath.util.ShaderType;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 import static android.opengl.GLES20.glGetUniformLocation;
+import static com.example.admin.openglpath.renderers.Renderer.FRAGMENT_COLOR;
+import static com.example.admin.openglpath.renderers.Renderer.VERTEX_MATRIX;
+import static com.example.admin.openglpath.renderers.Renderer.VERTEX_POSITION;
 
 /**
  * Created by Mark Stanford on 11/21/14.
@@ -19,13 +21,12 @@ public class Point extends Drawable {
     private static final String TAG = "Point";
 
     public Point(float x, float y, float z, int color) {
-        super(x, y, z);
         setXYZ(x, y, z);
 
         mColor = ColorUtil.getRGBAFromInt(color);
 
         //Get the shader for this shape and the program id where the shader is loaded
-        mShaderType = ShaderType.Triangle;
+        mShaderType = ShaderType.Card;
         mProgram = ShaderHelper.getInstance().getCompiledShaders().get(mShaderType);
 
         //Generating the vertices using the x,y

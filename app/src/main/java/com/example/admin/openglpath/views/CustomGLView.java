@@ -13,6 +13,7 @@ import android.view.View;
 
 import com.example.admin.openglpath.R;
 import com.example.admin.openglpath.data.DataHolder;
+import com.example.admin.openglpath.data.DrawableStateManager;
 import com.example.admin.openglpath.gestures.GestureListener;
 import com.example.admin.openglpath.gestures.ScaleListener;
 
@@ -77,7 +78,7 @@ public class CustomGLView extends GLSurfaceView implements View.OnTouchListener{
         //Add ourselves to the dataholder
         DataHolder.getInstance().setWorkspaceView(this);
 
-        DataHolder.getInstance().setCurrentSelectedColor(mShapeColor);
+        DrawableStateManager.getInstance().setCurrentSelectedColor(mShapeColor);
 
         setupOpenGL();
     }

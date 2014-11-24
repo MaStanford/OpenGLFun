@@ -1,7 +1,5 @@
 package com.example.admin.openglpath.shapes;
 
-import com.example.admin.openglpath.util.ShaderType;
-
 import java.nio.FloatBuffer;
 
 /**
@@ -9,15 +7,9 @@ import java.nio.FloatBuffer;
  */
 public abstract class Drawable implements IDrawable{
 
-    /**
-     * Shader locations
-     */
-    public static final String VERTEX_POSITION  = "vPosition";
-    public static final String VERTEX_MATRIX    = "uMVPMatrix";
-    public static final String FRAGMENT_COLOR   = "vColor";
 
     //The size of the shape
-    protected float mSize = .2f;
+    protected float mSize = .15f;
 
     //The shader type for this shape
     protected ShaderType mShaderType;
@@ -40,19 +32,17 @@ public abstract class Drawable implements IDrawable{
     //handle to vertex shader's vPosition member
     protected int mPositionHandle;
 
-    //How many bytes before the start of each vertex.  Use this if you store more than just vertex data
-    protected int vertexStride = COORDS_PER_VERTEX * 4; //4 are how many bytes in a float
-
     //handle to fragment shader's vColor member
     protected int mColorHandle;
 
     //The handle to the projection matrix
-    int muMVPMatrixHandle;
+    protected int muMVPMatrixHandle;
 
     // number of coordinates per vertex in this array
-    static final int COORDS_PER_VERTEX = 3;
+    int COORDS_PER_VERTEX = 3;
 
-    public Drawable(float x, float y, float z){}
+    //How many bytes each vertext plus color takes up.
+    protected int vertexStride = COORDS_PER_VERTEX * BYTES_FLOAT;
 
     abstract public void draw();
 
@@ -96,4 +86,9 @@ public abstract class Drawable implements IDrawable{
      */
     abstract public float doesIntersectXY(float x, float y);
 
+    @Override
+    public void setCoordsPerVertex(int coords) {
+        this.COORDS_PER_VERTEX = coords;
+        this.vertexStride = COORDS_PER_VERTEX * BYTES_FLOAT;
+    }
 }
