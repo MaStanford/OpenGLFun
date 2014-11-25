@@ -1,6 +1,6 @@
-package com.example.admin.openglpath.shapes;
+package com.example.admin.openglpath.drawables;
 
-import com.example.admin.openglpath.models.ShaderType;
+import com.example.admin.openglpath.models.DrawableType;
 
 import java.nio.FloatBuffer;
 
@@ -14,7 +14,7 @@ public abstract class Drawable implements IDrawable{
     protected float mSize = .15f;
 
     //The shader type for this shape
-    protected ShaderType mShaderType;
+    protected DrawableType mShaderType;
 
     //The shader program
     protected int mProgram;
@@ -40,8 +40,11 @@ public abstract class Drawable implements IDrawable{
     //The handle to the projection matrix
     protected int muMVPMatrixHandle;
 
+    //The handle to the vertex color
+    protected int mColorVaryHandle;
+
     // number of coordinates per vertex in this array
-    int COORDS_PER_VERTEX = 3;
+    protected int COORDS_PER_VERTEX = 3;
 
     //How many bytes each vertext plus color takes up.
     protected int vertexStride = COORDS_PER_VERTEX * BYTES_FLOAT;

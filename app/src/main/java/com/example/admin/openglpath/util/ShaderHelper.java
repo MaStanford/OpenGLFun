@@ -3,7 +3,7 @@ package com.example.admin.openglpath.util;
 import android.opengl.GLES20;
 import android.util.Log;
 
-import com.example.admin.openglpath.models.ShaderType;
+import com.example.admin.openglpath.models.DrawableType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -43,13 +43,13 @@ public class ShaderHelper {
     }
 
     //Map of shaderTypes in the shape to the program id int
-    private Map<ShaderType, Integer> compiledShaders  =  new HashMap<ShaderType, Integer>();
+    private Map<DrawableType, Integer> compiledShaders  =  new HashMap<DrawableType, Integer>();
     ;
 
     /**
      * Links shaders into a program
      */
-    public int attachShader(int vertextShaderID, int fragmentShaderID, ShaderType type){
+    public int attachShader(int vertextShaderID, int fragmentShaderID, DrawableType type){
 
         int mProgram = GLES20.glCreateProgram();           // create empty OpenGL ES Program
         GLES20.glAttachShader(mProgram, vertextShaderID);  // add the vertex shader to program
@@ -98,15 +98,15 @@ public class ShaderHelper {
         return shaderObjectId;
     }
 
-    public Map<ShaderType, Integer> getCompiledShaders() {
+    public Map<DrawableType, Integer> getCompiledShaders() {
         return compiledShaders;
     }
 
-    public void setCompiledShaders(Map<ShaderType, Integer> compiledShaders) {
+    public void setCompiledShaders(Map<DrawableType, Integer> compiledShaders) {
         compiledShaders = compiledShaders;
     }
 
-    public void putCompiledShader(ShaderType type, int program) {
+    public void putCompiledShader(DrawableType type, int program) {
         compiledShaders.put(type, program);
     }
 }

@@ -6,11 +6,11 @@ import android.view.ScaleGestureDetector;
 
 import com.example.admin.openglpath.data.DataHolder;
 import com.example.admin.openglpath.data.DrawableStateManager;
+import com.example.admin.openglpath.drawables.Drawable;
+import com.example.admin.openglpath.drawables.DrawableFactory;
 import com.example.admin.openglpath.loopers.FlingAnimation;
+import com.example.admin.openglpath.models.DrawableType;
 import com.example.admin.openglpath.models.HistoryEntry;
-import com.example.admin.openglpath.shapes.Card;
-import com.example.admin.openglpath.shapes.Drawable;
-import com.example.admin.openglpath.shapes.StrokeLines;
 import com.example.admin.openglpath.util.ViewUtils;
 
 import java.util.Random;
@@ -27,6 +27,9 @@ public class GestureHandler {
 
     //Drawable state manager
     DrawableStateManager dsm = DrawableStateManager.getInstance();
+
+    //Drawable factory
+    DrawableFactory df = DrawableFactory.getInstance();
 
     //The previously made object in case we have a double tap or long
     Drawable mPreviouslyMadeObject;
@@ -158,6 +161,8 @@ public class GestureHandler {
             }
             //Update the state of commands
             mLastCommand = SCROLL;
+        }else{
+            //TODO: make the workspace scrolling happen here.
         }
     }
 
@@ -234,22 +239,17 @@ public class GestureHandler {
             Drawable newObj;
             switch(dsm.getCurrentShapeToDraw()){
                 case CARD:
-                    newObj = new Card(x, y, 1, new Random().nextInt(Integer.MAX_VALUE));
+                    df.createDrawable(DrawableType.Card,x,y,1,new Random().nextInt(Integer.MAX_VALUE));
                     mPreviouslyMadeObject = dsm.getCurrentSelectedDrawable();
-                    dsm.setCurrentSelectedDrawable(newObj);
-                    dh.addDrawable(newObj);
                     mCurrentObject = CARD;
-                    //Add this action to history stack
-                    dsm.addToHistoryStack(new HistoryEntry(HistoryEntry.HistoryAction.Create, newObj, null));
                     break;
                 case STROKE:
-                    newObj  = new StrokeLines(x, y, 1, dsm.getCurrentLineWidth(), new Random().nextInt(Integer.MAX_VALUE));
+                    df.createDrawable(DrawableType.Line,x,y,1,new Random().nextInt(Integer.MAX_VALUE));
                     mPreviouslyMadeObject = dsm.getCurrentSelectedDrawable();
-                    dsm.setCurrentSelectedDrawable(newObj);
-                    dh.addDrawable(newObj);
                     mCurrentObject = STROKE;
-                    //Add this action to history stack
-                    dsm.addToHistoryStack(new HistoryEntry(HistoryEntry.HistoryAction.Create, newObj, null));
+                    break;
+                default:
+                    mCurrentObject = NONE;
                     break;
             }
         }
@@ -269,7 +269,7 @@ public class GestureHandler {
 
         Log.d(TAG, "onDoubleTap detected: " + x + ":" + y);
 
-        //Check to see if we intersect an object here.
+        //Check to see if we intersect an object here and then delete it
         Drawable drawable = dsm.getIntersectingDrawable(x,y);
         if(drawable != null) {
             if(mPreviouslyMadeObject != null) {
@@ -280,7 +280,7 @@ public class GestureHandler {
             dsm.clearCurrentSelectedDrawable();
             //Add this action to the history stack
             dsm.addToHistoryStack(new HistoryEntry(HistoryEntry.HistoryAction.Delete, null, drawable));
-        }else{
+        }else{ // Else make sure we delete the object the first down made TODO: this is for debugging and we will need new logic when we allow down presses to scroll the workspace and not only make objects
             if(mPreviouslyMadeObject != null) {
                 dh.removeDrawable(mPreviouslyMadeObject);
                 mPreviouslyMadeObject = null;

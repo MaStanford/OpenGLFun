@@ -3,7 +3,7 @@ package com.example.admin.openglpath.data;
 import android.opengl.GLSurfaceView;
 
 import com.example.admin.openglpath.loopers.Animation;
-import com.example.admin.openglpath.shapes.Drawable;
+import com.example.admin.openglpath.drawables.Drawable;
 
 import java.util.ArrayList;
 import java.util.HashMap;

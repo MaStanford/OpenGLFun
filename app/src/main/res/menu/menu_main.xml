@@ -1,11 +1,14 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" tools:context=".MainActivity">
     <item android:id="@+id/action_card" android:title="@string/action_card"
-        android:orderInCategory="101" android:showAsAction="never" />
+        android:icon="@drawable/icon_card_creator"
+        android:orderInCategory="101" android:showAsAction="always" />
     <item android:id="@+id/action_stroke" android:title="@string/action_stroke"
-        android:orderInCategory="102" android:showAsAction="never" />
+        android:icon="@drawable/pen"
+        android:orderInCategory="102" android:showAsAction="always" />
     <item android:id="@+id/action_line_size" android:title="@string/action_line_size"
-        android:orderInCategory="103" android:showAsAction="never" />
+        android:orderInCategory="103" android:showAsAction="always" />
     <item android:id="@+id/action_history_back" android:title="@string/action_back"
-        android:orderInCategory="104" android:showAsAction="never" />
+        android:icon="@drawable/undo"
+        android:orderInCategory="104" android:showAsAction="always" />
 </menu>

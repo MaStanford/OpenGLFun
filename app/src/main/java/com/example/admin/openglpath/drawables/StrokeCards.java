@@ -1,4 +1,4 @@
-package com.example.admin.openglpath.shapes;
+package com.example.admin.openglpath.drawables;
 
 import java.util.ArrayList;
 import java.util.List;

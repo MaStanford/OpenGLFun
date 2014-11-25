@@ -20,6 +20,8 @@ public class MainActivity extends Activity implements NumberPicker.OnValueChange
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        setTitle("BlueScape OpenGL Sandbox");
+        getActionBar().setIcon(R.drawable.logo);
     }
 
     @Override

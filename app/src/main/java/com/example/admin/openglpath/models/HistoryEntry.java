@@ -1,6 +1,6 @@
 package com.example.admin.openglpath.models;
 
-import com.example.admin.openglpath.shapes.Drawable;
+import com.example.admin.openglpath.drawables.Drawable;
 
 /**
  * Created by Mark Stanford on 11/24/14.

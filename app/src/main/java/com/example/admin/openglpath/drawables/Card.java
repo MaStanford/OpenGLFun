@@ -1,8 +1,8 @@
-package com.example.admin.openglpath.shapes;
+package com.example.admin.openglpath.drawables;
 
 import android.opengl.GLES20;
 
-import com.example.admin.openglpath.models.ShaderType;
+import com.example.admin.openglpath.models.DrawableType;
 import com.example.admin.openglpath.util.ColorUtil;
 import com.example.admin.openglpath.util.ShaderHelper;
 
@@ -15,19 +15,19 @@ import static com.example.admin.openglpath.renderers.Renderer.VERTEX_MATRIX;
 import static com.example.admin.openglpath.renderers.Renderer.VERTEX_POSITION;
 
 /**
- * Created by Mark Stanford on 11/21/14.
+ * Created by Mark Stanford on 11/18/14.
  */
-public class Point extends Drawable {
+public class Card extends Drawable {
 
-    private static final String TAG = "Point";
+    private static final String TAG = "Card";
 
-    public Point(float x, float y, float z, int color) {
-        setXYZ(x, y, z);
+    public Card(float x, float y, float z, int color) {
+        setXYZ(x,y,z);
 
         mColor = ColorUtil.getRGBAFromInt(color);
 
         //Get the shader for this shape and the program id where the shader is loaded
-        mShaderType = ShaderType.Card;
+        this.mShaderType = DrawableType.Card;
         mProgram = ShaderHelper.getInstance().getCompiledShaders().get(mShaderType);
 
         //Generating the vertices using the x,y
@@ -72,7 +72,7 @@ public class Point extends Drawable {
         muMVPMatrixHandle = glGetUniformLocation(mProgram, VERTEX_MATRIX);
 
         // Draw the triangle
-        GLES20.glDrawArrays(GLES20.GL_POINTS, 0, (shapeCoords.length / COORDS_PER_VERTEX));
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, (shapeCoords.length / COORDS_PER_VERTEX));
 
         // Disable vertex array
         GLES20.glDisableVertexAttribArray(mPositionHandle);
@@ -80,13 +80,22 @@ public class Point extends Drawable {
 
     /**
      * Generates the new vertices of the shape based on the X,Y and size
-     *
      * @param x
      * @param y
      */
     @Override
-    protected void generateNewVertices(float x, float y, float z) {
-        this.shapeCoords = new float[]{(x), (y), (0.0f),};
+    protected void generateNewVertices(float x, float y, float z){
+        this.shapeCoords = new float[]
+                {
+                //       X           Y              Z          Triangle 1
+                        (x),        (y),           (0.0f),  // top
+                        (x),        (y-mSize),     (0.0f),  // bottom left
+                        (x+mSize),  (y-mSize),     (0.0f),  // bottom right
+                                                            // Triangle 2
+                        (x),        (y),           (0.0f),  // top
+                        (x+mSize),  (y-mSize),     (0.0f),  // bottom left
+                        (x+mSize),  (y),           (0.0f)   // bottom right
+                };
 
         //Buffer stuff
         // initialize vertex byte buffer for shape coordinates
@@ -105,7 +114,7 @@ public class Point extends Drawable {
 
     @Override
     public float doesIntersectXY(float x, float y) {
-        if ((x > this.x) && (x < (this.x + mSize)) && (y < this.y) && (y > (this.y - mSize))) {
+        if((x > this.x) && (x < (this.x + mSize)) && (y < this.y) && (y > (this.y - mSize))){
             return this.z;
         }
         return -1;
@@ -113,13 +122,22 @@ public class Point extends Drawable {
 
     @Override
     public void setXYZ(float x, float y, float z) {
-        x = x - mSize / 2;
-        y = y + mSize / 2;
+        x = x - mSize/2;
+        y = y + mSize/2;
 
         this.x = x;
         this.y = y;
         this.z = z;
 
-        generateNewVertices(x, y, z);
+        generateNewVertices(x,y,z);
+    }
+
+    @Override
+    public void setXYZ(float[] coords) {
+        x = coords[0] - mSize/2;
+        y = coords[1] + mSize/2;
+        z = coords[2];
+
+        generateNewVertices(x,y,z);
     }
 }

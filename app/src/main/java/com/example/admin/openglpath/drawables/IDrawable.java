@@ -1,4 +1,4 @@
-package com.example.admin.openglpath.shapes;
+package com.example.admin.openglpath.drawables;
 
 /**
  * Created by Mark Stanford on 11/20/14.

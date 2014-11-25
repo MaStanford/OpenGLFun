@@ -3,13 +3,14 @@ package com.example.admin.openglpath.renderers;
 import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
+import android.util.Log;
 
 import com.example.admin.openglpath.R;
 import com.example.admin.openglpath.data.DataHolder;
 import com.example.admin.openglpath.loopers.AnimationLoop;
+import com.example.admin.openglpath.models.DrawableType;
 import com.example.admin.openglpath.util.ColorUtil;
 import com.example.admin.openglpath.util.ShaderHelper;
-import com.example.admin.openglpath.models.ShaderType;
 import com.example.admin.openglpath.util.TextResourceReader;
 
 import javax.microedition.khronos.egl.EGLConfig;
@@ -27,7 +28,7 @@ public class Renderer implements GLSurfaceView.Renderer {
 
     public static String TAG = "Renderer";
     /**
-     * Shader locations
+     * Shader locations.  Use a position handle to point to this location in the shader.
      */
     public static final String VERTEX_POSITION      = "aPosition";
     public static final String VERTEX_MATRIX        = "uMVPMatrix";
@@ -41,7 +42,7 @@ public class Renderer implements GLSurfaceView.Renderer {
     int BGColor;
     Context mContext;
 
-    //Projection
+    //Projection handle that points to the matrix array variable in the shader
     int muMVPMatrixHandle;
 
     public Renderer(Context context, int color) {
@@ -60,36 +61,33 @@ public class Renderer implements GLSurfaceView.Renderer {
         String fragmentShaderSource = TextResourceReader .readTextFileFromResource(mContext, R.raw.simple_fragment_shader);
         int vertexShader = ShaderHelper.getInstance().compileVertexShader(vertexShaderSource);
         int fragmentShader = ShaderHelper.getInstance().compileFragmentShader(fragmentShaderSource);
-        int program = ShaderHelper.getInstance().attachShader(vertexShader,fragmentShader, ShaderType.Card);
-        ShaderHelper.getInstance().putCompiledShader(ShaderType.Card, program);
+        int program = ShaderHelper.getInstance().attachShader(vertexShader,fragmentShader, DrawableType.Card);
+        ShaderHelper.getInstance().putCompiledShader(DrawableType.Card, program);
+        Log.d(TAG, "Vertex Program : " + program);
+
 
         //Logic for shader with color vary
         String vertexShaderSourceVary = TextResourceReader.readTextFileFromResource(mContext, R.raw.varying_vertex_shader);
         String fragmentShaderSourceVary = TextResourceReader .readTextFileFromResource(mContext, R.raw.varying_fragment_shader);
         int vertexShaderVary = ShaderHelper.getInstance().compileVertexShader(vertexShaderSourceVary);
         int fragmentShaderVary = ShaderHelper.getInstance().compileFragmentShader(fragmentShaderSourceVary);
-        int programVary = ShaderHelper.getInstance().attachShader(vertexShaderVary,fragmentShaderVary, ShaderType.CardVary);
-        ShaderHelper.getInstance().putCompiledShader(ShaderType.CardVary, programVary);
+        int programVary = ShaderHelper.getInstance().attachShader(vertexShaderVary,fragmentShaderVary, DrawableType.CardVary);
+        ShaderHelper.getInstance().putCompiledShader(DrawableType.CardVary, programVary);
+        Log.d(TAG, "VertexVary Program : " + programVary);
+
 
         //Logic for point shader
         String vertexShaderSourcePoint = TextResourceReader.readTextFileFromResource(mContext, R.raw.point_vertex_shader);
         String fragmentShaderSourcePoint = TextResourceReader .readTextFileFromResource(mContext, R.raw.simple_fragment_shader);
         int vertexShaderPoint = ShaderHelper.getInstance().compileVertexShader(vertexShaderSourcePoint);
         int fragmentShaderPoint = ShaderHelper.getInstance().compileFragmentShader(fragmentShaderSourcePoint);
-        int programPoint = ShaderHelper.getInstance().attachShader(vertexShaderPoint,fragmentShaderPoint, ShaderType.Point);
-        ShaderHelper.getInstance().putCompiledShader(ShaderType.CardVary, programPoint);
+        int programPoint = ShaderHelper.getInstance().attachShader(vertexShaderPoint,fragmentShaderPoint, DrawableType.Point);
+        ShaderHelper.getInstance().putCompiledShader(DrawableType.Point, programPoint);
+        Log.d(TAG, "Vertex point Program : " + programPoint);
 
 
         //Start the animation loop
         AnimationLoop.doRun();
-    }
-
-    public void setBGColor(int color) {
-        this.BGColor = color;
-    }
-
-    public int getBGColor() {
-        return this.BGColor;
     }
 
     /**

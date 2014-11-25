@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">OpenGLPath</string>
+    <string name="app_name">OpenGLSandbox</string>
     <string name="action_card">Draw Card</string>
     <string name="action_stroke">Draw Stroke</string>
     <string name="action_line_size">Pick Line Size</string>

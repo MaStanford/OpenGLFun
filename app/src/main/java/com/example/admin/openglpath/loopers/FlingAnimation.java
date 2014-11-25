@@ -1,7 +1,7 @@
 package com.example.admin.openglpath.loopers;
 
 import com.example.admin.openglpath.data.DataHolder;
-import com.example.admin.openglpath.shapes.Drawable;
+import com.example.admin.openglpath.drawables.Drawable;
 import com.example.admin.openglpath.util.ViewUtils;
 
 /**

@@ -1,6 +1,6 @@
 package com.example.admin.openglpath.loopers;
 
-import com.example.admin.openglpath.shapes.Drawable;
+import com.example.admin.openglpath.drawables.Drawable;
 
 /**
  * Created by Mark Stanford on 11/20/14.

@@ -4,7 +4,7 @@ import android.util.Log;
 
 import com.example.admin.openglpath.gestures.GestureHandler;
 import com.example.admin.openglpath.models.HistoryEntry;
-import com.example.admin.openglpath.shapes.Drawable;
+import com.example.admin.openglpath.drawables.Drawable;
 
 import java.util.Stack;
 
