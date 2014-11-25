@@ -2,6 +2,7 @@ package com.example.admin.openglpath.shapes;
 
 import android.opengl.GLES20;
 
+import com.example.admin.openglpath.models.ShaderType;
 import com.example.admin.openglpath.util.ColorUtil;
 import com.example.admin.openglpath.util.ShaderHelper;
 

@@ -5,5 +5,6 @@
     <string name="action_card">Draw Card</string>
     <string name="action_stroke">Draw Stroke</string>
     <string name="action_line_size">Pick Line Size</string>
+     <string name="action_back">Undo</string>
 
 </resources>

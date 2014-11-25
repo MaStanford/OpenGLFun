@@ -7,6 +7,7 @@ import android.view.ScaleGestureDetector;
 import com.example.admin.openglpath.data.DataHolder;
 import com.example.admin.openglpath.data.DrawableStateManager;
 import com.example.admin.openglpath.loopers.FlingAnimation;
+import com.example.admin.openglpath.models.HistoryEntry;
 import com.example.admin.openglpath.shapes.Card;
 import com.example.admin.openglpath.shapes.Drawable;
 import com.example.admin.openglpath.shapes.StrokeLines;
@@ -122,29 +123,41 @@ public class GestureHandler {
         dh.getDrawableList().clear();
     }
 
-    public void onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+    public void onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY){
         //Disregard if scale is happening
         if(mLastCommand == SCALE_START)
             return;
 
-        mLastCommand = SCROLL;
         float x, y;
         float scaled[] = ViewUtils.scaleTouchEvent(dh.getWorkspaceView(), e2.getX(), e2.getY(), 2);
         x = scaled[0];
         y = scaled[1];
-
-        DataHolder dh = DataHolder.getInstance();
-        if(dsm.isCurrentlySelectedDrawable() && e2.getAction() != MotionEvent.ACTION_UP){
-            //We have a currently selected drawable. We need to change it's x,y;
-            Log.d(TAG, "onScroll detected: " + x + ":" + y);
-            dsm.getCurrentSelectedDrawable().setXYZ(x, y, 1);
-        }
 
         //Check to see if we have an up gesture
         if(e2.getAction() == MotionEvent.ACTION_UP) {
             Log.d(TAG, "onScroll action up == " + (e2.getAction() == MotionEvent.ACTION_UP));
             dsm.clearCurrentSelectedDrawable();
             mLastCommand = NONE;
+        }
+
+        if(dsm.isCurrentlySelectedDrawable()){
+
+            //We have a currently selected drawable. We need to change it's x,y;
+            Log.d(TAG, "onScroll detected: " + x + ":" + y);
+            dsm.getCurrentSelectedDrawable().setXYZ(x, y, 1);
+
+            //We need to add this action to the history stack
+            if(mLastCommand != SCROLL && mCurrentObject != STROKE){
+                //Create new entry
+                dsm.addToHistoryStack(new HistoryEntry(HistoryEntry.HistoryAction.Move,dsm.getCurrentSelectedDrawable(), null));
+                dsm.getCurrentSelectedDrawable().setXYZ(x, y, 1);
+            }else if(mLastCommand == SCROLL && mCurrentObject != STROKE){
+                //Update current entry
+                dsm.getCurrentSelectedDrawable().setXYZ(x, y, 1);
+                dsm.updateLatestHistoryEntry((new HistoryEntry(HistoryEntry.HistoryAction.Move, dsm.getCurrentSelectedDrawable(), null)));
+            }
+            //Update the state of commands
+            mLastCommand = SCROLL;
         }
     }
 
@@ -226,6 +239,8 @@ public class GestureHandler {
                     dsm.setCurrentSelectedDrawable(newObj);
                     dh.addDrawable(newObj);
                     mCurrentObject = CARD;
+                    //Add this action to history stack
+                    dsm.addToHistoryStack(new HistoryEntry(HistoryEntry.HistoryAction.Create, newObj, null));
                     break;
                 case STROKE:
                     newObj  = new StrokeLines(x, y, 1, dsm.getCurrentLineWidth(), new Random().nextInt(Integer.MAX_VALUE));
@@ -233,6 +248,8 @@ public class GestureHandler {
                     dsm.setCurrentSelectedDrawable(newObj);
                     dh.addDrawable(newObj);
                     mCurrentObject = STROKE;
+                    //Add this action to history stack
+                    dsm.addToHistoryStack(new HistoryEntry(HistoryEntry.HistoryAction.Create, newObj, null));
                     break;
             }
         }
@@ -252,19 +269,22 @@ public class GestureHandler {
 
         Log.d(TAG, "onDoubleTap detected: " + x + ":" + y);
 
-        //Check to see if we intersect an object here.  If not then create one.
+        //Check to see if we intersect an object here.
         Drawable drawable = dsm.getIntersectingDrawable(x,y);
         if(drawable != null) {
             if(mPreviouslyMadeObject != null) {
                 dh.removeDrawable(mPreviouslyMadeObject);
                 mPreviouslyMadeObject = null;
             }
-
             dh.removeDrawable(drawable);
             dsm.clearCurrentSelectedDrawable();
+            //Add this action to the history stack
+            dsm.addToHistoryStack(new HistoryEntry(HistoryEntry.HistoryAction.Delete, null, drawable));
         }else{
-            dh.removeDrawable(mPreviouslyMadeObject);
-            mPreviouslyMadeObject = null;
+            if(mPreviouslyMadeObject != null) {
+                dh.removeDrawable(mPreviouslyMadeObject);
+                mPreviouslyMadeObject = null;
+            }
             dsm.clearCurrentSelectedDrawable();
         }
     }

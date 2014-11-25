@@ -12,6 +12,8 @@ public interface IDrawable {
 
     abstract void setXYZ(float x, float y, float z);
 
+    abstract float[] getXYZ();
+
     abstract void setColor(float[] color);
 
     abstract float doesIntersectXY(float x, float y);

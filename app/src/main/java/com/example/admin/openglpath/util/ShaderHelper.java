@@ -3,7 +3,7 @@ package com.example.admin.openglpath.util;
 import android.opengl.GLES20;
 import android.util.Log;
 
-import com.example.admin.openglpath.shapes.ShaderType;
+import com.example.admin.openglpath.models.ShaderType;
 
 import java.util.HashMap;
 import java.util.Map;

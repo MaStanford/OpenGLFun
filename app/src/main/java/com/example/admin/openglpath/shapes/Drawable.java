@@ -1,5 +1,7 @@
 package com.example.admin.openglpath.shapes;
 
+import com.example.admin.openglpath.models.ShaderType;
+
 import java.nio.FloatBuffer;
 
 /**
@@ -58,6 +60,24 @@ public abstract class Drawable implements IDrawable{
         this.y = y;
         this.z = z;
         generateNewVertices(x,y,z);
+    }
+
+    /**
+     * Sets the X and Y of the shape.
+     *
+     * We may be able to assume we want to have this x and y be the center of the shape.
+     * @param coords xyz float array
+     */
+    public void setXYZ(float[] coords){
+        this.x = coords[0];
+        this.y = coords[1];
+        this.z = coords[2];
+        generateNewVertices(x,y,z);
+    }
+
+    @Override
+    public float[] getXYZ() {
+        return new float[]{this.x,this.y,this.z};
     }
 
     /**

@@ -9,7 +9,7 @@ import com.example.admin.openglpath.data.DataHolder;
 import com.example.admin.openglpath.loopers.AnimationLoop;
 import com.example.admin.openglpath.util.ColorUtil;
 import com.example.admin.openglpath.util.ShaderHelper;
-import com.example.admin.openglpath.shapes.ShaderType;
+import com.example.admin.openglpath.models.ShaderType;
 import com.example.admin.openglpath.util.TextResourceReader;
 
 import javax.microedition.khronos.egl.EGLConfig;

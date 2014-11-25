@@ -46,6 +46,9 @@ public class MainActivity extends Activity implements NumberPicker.OnValueChange
             case R.id.action_line_size:
                 showDialog();
                 break;
+            case R.id.action_history_back:
+                DrawableStateManager.getInstance().popFromHistoryStack();
+                break;
         }
 
         return super.onOptionsItemSelected(item);

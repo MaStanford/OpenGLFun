@@ -6,4 +6,6 @@
         android:orderInCategory="102" android:showAsAction="never" />
     <item android:id="@+id/action_line_size" android:title="@string/action_line_size"
         android:orderInCategory="103" android:showAsAction="never" />
+    <item android:id="@+id/action_history_back" android:title="@string/action_back"
+        android:orderInCategory="104" android:showAsAction="never" />
 </menu>

@@ -3,10 +3,10 @@ package com.example.admin.openglpath.data;
 import android.util.Log;
 
 import com.example.admin.openglpath.gestures.GestureHandler;
+import com.example.admin.openglpath.models.HistoryEntry;
 import com.example.admin.openglpath.shapes.Drawable;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Stack;
 
 /**
  * Maintains the state of our drawables.
@@ -38,7 +38,7 @@ public class DrawableStateManager {
      * Our history object.  When you make a change to an object save the original here.
      * That way we can recall objects before changes.
      */
-    private List<Drawable> mHistory;
+    private Stack<HistoryEntry> mHistory;
 
     /**
      * Current drawable the user has selected to draw
@@ -54,7 +54,7 @@ public class DrawableStateManager {
      * Private constructor for our singleton pattern
      */
     private DrawableStateManager(){
-        mHistory = new ArrayList<Drawable>();
+        mHistory = new Stack<HistoryEntry>();
         mCurrentSelectedColor = 255; //Blue
     }
 
@@ -153,5 +153,59 @@ public class DrawableStateManager {
 
     public void setCurrentShapeToDraw(int mCurrentShapeToDraw) {
         this.mCurrentShapeToDraw = mCurrentShapeToDraw;
+    }
+
+    /**
+     * adds the currently created object to the stack
+     * @param history
+     */
+    public void addToHistoryStack(HistoryEntry history){
+        Log.d(TAG, "addToHistoryStack action:" + history.getAction());
+        switch(history.getAction()){
+            case Create:
+                mHistory.add(history);
+                break;
+            case Move:
+                history.setPreviousXYZ(history.getCurrentState().getXYZ());
+                mHistory.add(history);
+                break;
+            case Delete:
+                mHistory.add(history);
+                break;
+        }
+    }
+
+    /**
+     * Pops the current object from the history and then sets the one before.
+     */
+    public void popFromHistoryStack(){
+        if(!mHistory.empty()) {
+            //Stop animating this object
+            dh.getAnimationMap().remove(mHistory.peek().getCurrentState());
+            switch(mHistory.peek().getAction()){
+                case Create:
+                    dh.removeDrawable(mHistory.pop().getCurrentState());
+                    break;
+                case Move:
+                    float[] prev = mHistory.peek().getPreviousXYZ();
+                    float[] curr = mHistory.peek().getCurrentState().getXYZ();
+                    Log.d(TAG, String.format("previous xyz %f:%f:%f current xyz : %f:%f:%f", prev[0],prev[1],prev[2],curr[0],curr[1],curr[2]));
+                    mHistory.peek().getCurrentState().setXYZ(mHistory.pop().getPreviousXYZ());
+                    break;
+                case Delete:
+                    dh.addDrawable(mHistory.pop().getPreviousState());
+                    break;
+            }
+        }
+    }
+
+    /**
+     * This is for long running actions like drawing or dragging.
+     *
+     * @param history
+     */
+    public void updateLatestHistoryEntry(HistoryEntry history){
+        //we may need some logic here. We may not need logic here.
+        //The reference to the object is the same in the history queue and the state manager
     }
 }

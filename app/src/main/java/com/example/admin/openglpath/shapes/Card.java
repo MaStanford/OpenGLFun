@@ -2,6 +2,7 @@ package com.example.admin.openglpath.shapes;
 
 import android.opengl.GLES20;
 
+import com.example.admin.openglpath.models.ShaderType;
 import com.example.admin.openglpath.util.ColorUtil;
 import com.example.admin.openglpath.util.ShaderHelper;
 
@@ -127,6 +128,15 @@ public class Card extends Drawable {
         this.x = x;
         this.y = y;
         this.z = z;
+
+        generateNewVertices(x,y,z);
+    }
+
+    @Override
+    public void setXYZ(float[] coords) {
+        x = coords[0] - mSize/2;
+        y = coords[1] + mSize/2;
+        z = coords[2];
 
         generateNewVertices(x,y,z);
     }
