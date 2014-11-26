@@ -31,10 +31,10 @@ public class StrokeCards extends Drawable{
     }
 
     @Override
-    public void draw() {
+    public void draw(float[] matrix) {
         //generateNewVertices(0,0,0);
         for(int i = 0; i < shapes.size(); i++){
-            shapes.get(i).draw();
+            shapes.get(i).draw(matrix);
         }
 
     }

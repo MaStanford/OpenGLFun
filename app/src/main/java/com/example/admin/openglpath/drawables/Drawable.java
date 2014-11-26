@@ -49,7 +49,7 @@ public abstract class Drawable implements IDrawable{
     //How many bytes each vertext plus color takes up.
     protected int vertexStride = COORDS_PER_VERTEX * BYTES_FLOAT;
 
-    abstract public void draw();
+    abstract public void draw(float[] matrix);
 
     /**
      * Sets the X and Y of the shape.

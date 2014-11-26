@@ -43,6 +43,7 @@ public class GestureHandler {
     /**
      * Drawable currently selected or last made
      */
+    public static final int NO_SHAPE           = 3;
     public static final int CARD               = 4;
     public static final int STROKE             = 5;
 
@@ -81,6 +82,19 @@ public class GestureHandler {
 
     public void onScale(ScaleGestureDetector detector) {
         dsm.clearCurrentSelectedDrawable();
+
+        //Do some math to figure out how we are scaling TODO: make a helper to scale this to the screen and zoom.
+        float previous = detector.getPreviousSpan();
+        float current = detector.getCurrentSpan();
+        float difference = (previous/current);
+        float zoom = dh.getZoom();
+
+        Log.d(TAG, "ScaleDifference: " + difference);
+
+        dh.addToZoom(difference);
+
+        dh.getRenderer().changeProjection(dh.getZoom());
+
         Log.d(TAG, "onScale");
     }
 
@@ -117,7 +131,7 @@ public class GestureHandler {
             return;
 
         float x, y;
-        float scaled[] = ViewUtils.scaleTouchEvent(dh.getWorkspaceView(), e.getX(), e.getY(), 2);
+        float scaled[] = ViewUtils.scaleTouchEvent(dh.getWorkspaceView(), e.getX(), e.getY());
         x = scaled[0];
         y = scaled[1];
         Log.d(TAG, "onLongPress detected: " + x + ":" + y);
@@ -132,7 +146,7 @@ public class GestureHandler {
             return;
 
         float x, y;
-        float scaled[] = ViewUtils.scaleTouchEvent(dh.getWorkspaceView(), e2.getX(), e2.getY(), 2);
+        float scaled[] = ViewUtils.scaleTouchEvent(dh.getWorkspaceView(), e2.getX(), e2.getY());
         x = scaled[0];
         y = scaled[1];
 
@@ -144,11 +158,9 @@ public class GestureHandler {
         }
 
         if(dsm.isCurrentlySelectedDrawable()){
-
             //We have a currently selected drawable. We need to change it's x,y;
             Log.d(TAG, "onScroll detected: " + x + ":" + y);
             dsm.getCurrentSelectedDrawable().setXYZ(x, y, 1);
-
             //We need to add this action to the history stack
             if(mLastCommand != SCROLL && mCurrentObject != STROKE){
                 //Create new entry
@@ -162,7 +174,9 @@ public class GestureHandler {
             //Update the state of commands
             mLastCommand = SCROLL;
         }else{
-            //TODO: make the workspace scrolling happen here.
+            //Change the location of the viewport
+            Log.d(TAG, "Viewport scroll detected: " + x + ":" + y);
+            dh.getRenderer().changeViewport((int)x,(int)y);
         }
     }
 
@@ -174,7 +188,7 @@ public class GestureHandler {
         mLastCommand = FLING;
 
         float x, y;
-        float scaled[] = ViewUtils.scaleTouchEvent(dh.getWorkspaceView(), e2.getX(), e2.getY(), 2);
+        float scaled[] = ViewUtils.scaleTouchEvent(dh.getWorkspaceView(), e2.getX(), e2.getY());
         x = scaled[0];
         y = scaled[1];
         Log.d(TAG, "onFling detected: " + x + ":" + y);
@@ -220,7 +234,7 @@ public class GestureHandler {
         mLastCommand = DOWN;
 
         float x, y;
-        float scaled[] = ViewUtils.scaleTouchEvent(dh.getWorkspaceView(), e.getX(), e.getY(), 2);
+        float scaled[] = ViewUtils.scaleTouchEvent(dh.getWorkspaceView(), e.getX(), e.getY());
         x = scaled[0];
         y = scaled[1];
         Log.d(TAG, "onDown detected: " + x + ":" + y);
@@ -234,24 +248,27 @@ public class GestureHandler {
             if(dh.getAnimationMap().containsKey(drawable)){
                 dh.getAnimationMap().get(drawable).stop();
             }
-        } else {
+        } else if(dsm.getCurrentShapeToDraw() != NO_SHAPE) {
             //Draw the shape
             Drawable newObj;
-            switch(dsm.getCurrentShapeToDraw()){
+            switch (dsm.getCurrentShapeToDraw()) {
                 case CARD:
-                    df.createDrawable(DrawableType.Card,x,y,1,new Random().nextInt(Integer.MAX_VALUE));
+                    df.createDrawable(DrawableType.Card, x, y, 1, new Random().nextInt(Integer.MAX_VALUE));
                     mPreviouslyMadeObject = dsm.getCurrentSelectedDrawable();
                     mCurrentObject = CARD;
                     break;
                 case STROKE:
-                    df.createDrawable(DrawableType.Line,x,y,1,new Random().nextInt(Integer.MAX_VALUE));
+                    df.createDrawable(DrawableType.Line, x, y, 1, new Random().nextInt(Integer.MAX_VALUE));
                     mPreviouslyMadeObject = dsm.getCurrentSelectedDrawable();
                     mCurrentObject = STROKE;
                     break;
                 default:
-                    mCurrentObject = NONE;
+                    mCurrentObject = NO_SHAPE;
                     break;
             }
+        }else{
+            dsm.setCurrentSelectedDrawable(null);
+            mCurrentObject = NO_SHAPE;
         }
     }
 
@@ -263,7 +280,7 @@ public class GestureHandler {
         mLastCommand = DOUBLE_TAP;
 
         float x, y;
-        float scaled[] = ViewUtils.scaleTouchEvent(dh.getWorkspaceView(), e.getX(), e.getY(), 2);
+        float scaled[] = ViewUtils.scaleTouchEvent(dh.getWorkspaceView(), e.getX(), e.getY());
         x = scaled[0];
         y = scaled[1];
 

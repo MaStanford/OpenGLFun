@@ -51,6 +51,10 @@ public class MainActivity extends Activity implements NumberPicker.OnValueChange
             case R.id.action_history_back:
                 DrawableStateManager.getInstance().popFromHistoryStack();
                 break;
+            case R.id.action_scroll:
+                DrawableStateManager.getInstance().setCurrentSelectedDrawable(null);
+                DrawableStateManager.getInstance().setCurrentShapeToDraw(GestureHandler.NO_SHAPE);
+                break;
         }
 
         return super.onOptionsItemSelected(item);

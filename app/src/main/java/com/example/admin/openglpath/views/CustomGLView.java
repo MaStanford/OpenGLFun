@@ -94,6 +94,9 @@ public class CustomGLView extends GLSurfaceView implements View.OnTouchListener{
         //Initialize the renderer
         mRenderer = new com.example.admin.openglpath.renderers.Renderer(this.getContext(), mBackGroundColor);
 
+        //Add renderer to the dataholder
+        DataHolder.getInstance().setRenderer(mRenderer);
+
         // Set the Renderer for drawing on the GLSurfaceView
         setRenderer(mRenderer);
 

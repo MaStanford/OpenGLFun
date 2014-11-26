@@ -12,7 +12,7 @@ public class Text extends Drawable{
     }
 
     @Override
-    public void draw() {
+    public void draw(float[] matrix) {
 
     }
 

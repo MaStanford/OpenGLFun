@@ -8,7 +8,7 @@ public interface IDrawable {
     //How many bytes in a float
     static int BYTES_FLOAT = 4;
 
-    abstract void draw();
+    abstract void draw(float[] matrix);
 
     abstract void setXYZ(float x, float y, float z);
 

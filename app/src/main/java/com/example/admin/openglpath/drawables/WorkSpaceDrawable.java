@@ -6,7 +6,7 @@ package com.example.admin.openglpath.drawables;
 public class WorkSpaceDrawable extends Drawable{
 
     @Override
-    public void draw() {
+    public void draw(float[] matrix) {
 
     }
 

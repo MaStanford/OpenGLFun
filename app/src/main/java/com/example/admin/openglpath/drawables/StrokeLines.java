@@ -70,7 +70,7 @@ public class StrokeLines extends Drawable{
     }
 
     @Override
-    public void draw() {
+    public void draw(float[] matrix) {
 
         // Add program to OpenGL ES environment
         glUseProgram(mProgram);

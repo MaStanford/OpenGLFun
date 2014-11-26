@@ -11,4 +11,7 @@
     <item android:id="@+id/action_history_back" android:title="@string/action_back"
         android:icon="@drawable/undo"
         android:orderInCategory="104" android:showAsAction="always" />
+    <item android:id="@+id/action_scroll" android:title="Scroll"
+        android:icon="@drawable/app_icon"
+        android:orderInCategory="100" android:showAsAction="ifRoom" />
 </menu>

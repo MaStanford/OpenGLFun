@@ -20,6 +20,7 @@ import static android.opengl.GLES20.GL_COLOR_BUFFER_BIT;
 import static android.opengl.GLES20.glClear;
 import static android.opengl.GLES20.glClearColor;
 import static android.opengl.GLES20.glViewport;
+import static android.opengl.Matrix.orthoM;
 
 /**
  * Created by Mark Stanford on 11/18/14.
@@ -30,20 +31,23 @@ public class Renderer implements GLSurfaceView.Renderer {
     /**
      * Shader locations.  Use a position handle to point to this location in the shader.
      */
-    public static final String VERTEX_POSITION      = "aPosition";
-    public static final String VERTEX_MATRIX        = "uMVPMatrix";
-    public static final String VERTEX_POINT_SIZE    = "aPointSize";
-    public static final String VERTEX_COLOR         = "aColor";
-    public static final String VERTEX_VCOLOR        = "vColor";
-    public static final String FRAGMENT_COLOR       = "uColor";
-    public static final String FRAGMENT_VCOLOR      = "vColor";
+    public static final String VERTEX_POSITION = "aPosition";
+    public static final String VERTEX_MATRIX = "u_Matrix";
+    public static final String VERTEX_POINT_SIZE = "aPointSize";
+    public static final String VERTEX_COLOR = "aColor";
+    public static final String VERTEX_VCOLOR = "vColor";
+    public static final String FRAGMENT_COLOR = "uColor";
+    public static final String FRAGMENT_VCOLOR = "vColor";
 
 
     int BGColor;
     Context mContext;
+    int screenWidth;
+    int screenHeight;
 
-    //Projection handle that points to the matrix array variable in the shader
-    int muMVPMatrixHandle;
+
+    //The projection matrix
+    private final float[] projectionMatrix = new float[16];
 
     public Renderer(Context context, int color) {
         this.mContext = context;
@@ -58,30 +62,30 @@ public class Renderer implements GLSurfaceView.Renderer {
 
         //Logic for simple shader
         String vertexShaderSource = TextResourceReader.readTextFileFromResource(mContext, R.raw.simple_vertex_shader);
-        String fragmentShaderSource = TextResourceReader .readTextFileFromResource(mContext, R.raw.simple_fragment_shader);
+        String fragmentShaderSource = TextResourceReader.readTextFileFromResource(mContext, R.raw.simple_fragment_shader);
         int vertexShader = ShaderHelper.getInstance().compileVertexShader(vertexShaderSource);
         int fragmentShader = ShaderHelper.getInstance().compileFragmentShader(fragmentShaderSource);
-        int program = ShaderHelper.getInstance().attachShader(vertexShader,fragmentShader, DrawableType.Card);
+        int program = ShaderHelper.getInstance().attachShader(vertexShader, fragmentShader, DrawableType.Card);
         ShaderHelper.getInstance().putCompiledShader(DrawableType.Card, program);
         Log.d(TAG, "Vertex Program : " + program);
 
 
         //Logic for shader with color vary
         String vertexShaderSourceVary = TextResourceReader.readTextFileFromResource(mContext, R.raw.varying_vertex_shader);
-        String fragmentShaderSourceVary = TextResourceReader .readTextFileFromResource(mContext, R.raw.varying_fragment_shader);
+        String fragmentShaderSourceVary = TextResourceReader.readTextFileFromResource(mContext, R.raw.varying_fragment_shader);
         int vertexShaderVary = ShaderHelper.getInstance().compileVertexShader(vertexShaderSourceVary);
         int fragmentShaderVary = ShaderHelper.getInstance().compileFragmentShader(fragmentShaderSourceVary);
-        int programVary = ShaderHelper.getInstance().attachShader(vertexShaderVary,fragmentShaderVary, DrawableType.CardVary);
+        int programVary = ShaderHelper.getInstance().attachShader(vertexShaderVary, fragmentShaderVary, DrawableType.CardVary);
         ShaderHelper.getInstance().putCompiledShader(DrawableType.CardVary, programVary);
         Log.d(TAG, "VertexVary Program : " + programVary);
 
 
         //Logic for point shader
         String vertexShaderSourcePoint = TextResourceReader.readTextFileFromResource(mContext, R.raw.point_vertex_shader);
-        String fragmentShaderSourcePoint = TextResourceReader .readTextFileFromResource(mContext, R.raw.simple_fragment_shader);
+        String fragmentShaderSourcePoint = TextResourceReader.readTextFileFromResource(mContext, R.raw.simple_fragment_shader);
         int vertexShaderPoint = ShaderHelper.getInstance().compileVertexShader(vertexShaderSourcePoint);
         int fragmentShaderPoint = ShaderHelper.getInstance().compileFragmentShader(fragmentShaderSourcePoint);
-        int programPoint = ShaderHelper.getInstance().attachShader(vertexShaderPoint,fragmentShaderPoint, DrawableType.Point);
+        int programPoint = ShaderHelper.getInstance().attachShader(vertexShaderPoint, fragmentShaderPoint, DrawableType.Point);
         ShaderHelper.getInstance().putCompiledShader(DrawableType.Point, programPoint);
         Log.d(TAG, "Vertex point Program : " + programPoint);
 
@@ -101,8 +105,13 @@ public class Renderer implements GLSurfaceView.Renderer {
 
     @Override
     public void onSurfaceChanged(GL10 gl10, int width, int height) {
-        // Set the OpenGL viewport to fill the entire surface.
-        glViewport(0, 0, width, height);
+
+        this.screenWidth=width;
+        this.screenHeight=height;
+
+        changeViewport(0,0);
+
+        changeProjection(1.0f);
 
         GLES20.glClearDepthf(1f);
     }
@@ -113,8 +122,23 @@ public class Renderer implements GLSurfaceView.Renderer {
         glClear(GL_COLOR_BUFFER_BIT);
 
         //Iterate through the drawableList, cannot use enhanced with an iterator if we remove or add to list while iterating
-        for (int i = 0; i< DataHolder.getInstance().getDrawableList().size() ; i++) {
-            DataHolder.getInstance().getDrawableList().get(i).draw();
+        for (int i = 0; i < DataHolder.getInstance().getDrawableList().size(); i++) {
+            DataHolder.getInstance().getDrawableList().get(i).draw(projectionMatrix);
         }
+    }
+
+    public void changeProjection(float zoom) {
+
+        //This is for setting the projection and aspect ratio
+        final float aspectRatio = (float) screenWidth / (float) screenHeight;
+        Log.d(TAG, "aspectRatio: " + aspectRatio);
+
+        orthoM(projectionMatrix, 0, -aspectRatio * zoom, aspectRatio * zoom, -zoom, zoom, -1f, 1f);
+
+        DataHolder.getInstance().setAspectRatio(aspectRatio);
+    }
+
+    public void changeViewport(int x, int y){
+        glViewport(x, y, screenWidth, screenHeight);
     }
 }
