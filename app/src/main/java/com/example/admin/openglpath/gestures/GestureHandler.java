@@ -1,6 +1,5 @@
 package com.example.admin.openglpath.gestures;
 
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 
@@ -89,13 +88,7 @@ public class GestureHandler {
         float difference = (previous/current);
         float zoom = dh.getZoom();
 
-        Log.d(TAG, "ScaleDifference: " + difference);
-
         dh.addToZoom(difference);
-
-        dh.getRenderer().changeProjection(dh.getZoom());
-
-        Log.d(TAG, "onScale");
     }
 
     public void onScaleBegin(ScaleGestureDetector detector) {
@@ -107,13 +100,10 @@ public class GestureHandler {
             mPreviouslyMadeObject = null;
             mLastCommand = SCALE_START;
         }
-
-        Log.d(TAG, "onScaleBegin");
     }
 
     public void onScaleEnd(ScaleGestureDetector detector) {
         mLastCommand = SCALE_STOP;
-        Log.d(TAG, "onScaleEnd");
     }
 
     public void onSingleTapUp(MotionEvent e) {
@@ -122,7 +112,6 @@ public class GestureHandler {
             return;
 
         dsm.clearCurrentSelectedDrawable();
-        Log.d(TAG, "onSingleTapUp detected");
     }
 
     public void onLongPress(MotionEvent e) {
@@ -134,7 +123,6 @@ public class GestureHandler {
         float scaled[] = ViewUtils.scaleTouchEvent(dh.getWorkspaceView(), e.getX(), e.getY());
         x = scaled[0];
         y = scaled[1];
-        Log.d(TAG, "onLongPress detected: " + x + ":" + y);
 
         //For debugging purposes
         dh.getDrawableList().clear();
@@ -152,13 +140,11 @@ public class GestureHandler {
 
         //Check to see if we have an up gesture
         if(e2.getAction() == MotionEvent.ACTION_UP) {
-            Log.d(TAG, "onScroll action up == " + (e2.getAction() == MotionEvent.ACTION_UP));
             mLastCommand = NONE;
         }
 
         if(dsm.isCurrentlySelectedDrawable()){
             //We have a currently selected drawable. We need to change it's x,y;
-            Log.d(TAG, "onScroll detected: " + x + ":" + y);
             dsm.getCurrentSelectedDrawable().setXYZ(x, y, 1);
             //We need to add this action to the history stack
             if(mLastCommand != SCROLL && mCurrentObject != STROKE){
@@ -174,8 +160,7 @@ public class GestureHandler {
             mLastCommand = SCROLL;
         }else{
             //Change the location of the viewport
-            Log.d(TAG, "Viewport scroll detected: " + x + ":" + y);
-            dh.getRenderer().changeViewport((int)x,(int)y);
+            dh.addOffset(new float[]{distanceX,distanceY});
         }
     }
 
@@ -190,7 +175,6 @@ public class GestureHandler {
         float scaled[] = ViewUtils.scaleTouchEvent(dh.getWorkspaceView(), e2.getX(), e2.getY());
         x = scaled[0];
         y = scaled[1];
-        Log.d(TAG, "onFling detected: " + x + ":" + y);
 
         if(dsm.isCurrentlySelectedDrawable()){
             //We have a currently selected drawable. We need to change it's x,y;
@@ -213,8 +197,6 @@ public class GestureHandler {
         //Disregard if scale is happening
         if(mLastCommand == SCALE_START)
             return;
-
-        Log.d(TAG, "onShowPress detected!");
     }
 
     public void onDown(MotionEvent e) {
@@ -234,7 +216,6 @@ public class GestureHandler {
         float scaled[] = ViewUtils.scaleTouchEvent(dh.getWorkspaceView(), e.getX(), e.getY());
         x = scaled[0];
         y = scaled[1];
-        Log.d(TAG, "onDown detected: " + x + ":" + y);
 
         //Check to see if we intersect an object here.  If not then create one.
         Drawable drawable = dsm.getIntersectingDrawable(x, y);
@@ -281,8 +262,6 @@ public class GestureHandler {
         x = scaled[0];
         y = scaled[1];
 
-        Log.d(TAG, "onDoubleTap detected: " + x + ":" + y);
-
         //Check to see if we intersect an object here and then delete it
         Drawable drawable = dsm.getIntersectingDrawable(x,y);
         if(drawable != null) {
@@ -309,16 +288,12 @@ public class GestureHandler {
             return;
 
         mLastCommand = DOUBLE_TAP;
-
-        Log.d(TAG, "onDoubleTapEvent detected");
     }
 
     public void onSingleTapConfirmed(MotionEvent e) {
         //Disregard if scale is happening
         if(mLastCommand == SCALE_START)
             return;
-
-        Log.d(TAG, "onSingleTapConfirmed detected");
     }
 
 }

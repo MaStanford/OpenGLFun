@@ -1,6 +1,7 @@
 package com.example.admin.openglpath.data;
 
 import android.opengl.GLSurfaceView;
+import android.util.Log;
 
 import com.example.admin.openglpath.drawables.Drawable;
 import com.example.admin.openglpath.loopers.Animation;
@@ -60,6 +61,12 @@ public class DataHolder {
      */
     public static final float MAX_ZOOM = .5f;
     public static final float MIN_ZOOM = 10f;
+
+    /**
+     * Workspace offset
+     */
+    private float offsetX = 0f;
+    private float offsetY = 0f;
 
 
     /**
@@ -122,6 +129,7 @@ public class DataHolder {
         if(mZoom*difference < MAX_ZOOM || mZoom*difference > MIN_ZOOM)
             return;
         this.mZoom *= difference;
+        this.mRenderer.updateViewport(mZoom, offsetX, offsetY);
     }
 
     public Renderer getRenderer() {
@@ -140,4 +148,29 @@ public class DataHolder {
         this.mAspectRatio = mAspectRatio;
     }
 
+    /**
+     * Returns offset as a float array 0 = x 1 = y
+     * @return
+     */
+    public float[] getOffset(){
+        return new float[]{offsetX,offsetY};
+    }
+
+    /**
+     * set the offset with a float array.
+     * 0=x
+     * 1=y
+     * @param offset
+     */
+    public void setOffset(float[] offset){
+        this.offsetX = offset[0];
+        this.offsetY = offset[1];
+    }
+
+    public void addOffset(float[] offset){
+        Log.d(TAG, String.format("Current Offset %f:%f Add %f:%f", offsetX,offsetY, offset[0]/1000, offset[1]/1000));
+        this.offsetX += offset[0]/1000;
+        this.offsetY += offset[1]/1000;
+        this.mRenderer.updateViewport(mZoom, offsetX, offsetY);
+    }
 }

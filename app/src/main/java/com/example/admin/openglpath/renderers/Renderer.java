@@ -3,7 +3,6 @@ package com.example.admin.openglpath.renderers;
 import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
-import android.util.Log;
 
 import com.example.admin.openglpath.data.DataHolder;
 import com.example.admin.openglpath.loopers.AnimationLoop;
@@ -29,23 +28,13 @@ import static android.opengl.Matrix.orthoM;
 public class Renderer implements GLSurfaceView.Renderer {
 
     public static String TAG = "Renderer";
-    /**
-     * Shader locations.  Use a position handle to point to this location in the shader.
-     */
-    public static final String VERTEX_POSITION = "aPosition";
-    public static final String VERTEX_MATRIX = "u_Matrix";
-    public static final String VERTEX_POINT_SIZE = "aPointSize";
-    public static final String VERTEX_COLOR = "aColor";
-    public static final String VERTEX_VCOLOR = "vColor";
-    public static final String FRAGMENT_COLOR = "uColor";
-    public static final String FRAGMENT_VCOLOR = "vColor";
-
 
     int BGColor;
     Context mContext;
     int screenWidth;
     int screenHeight;
 
+    DataHolder dh = DataHolder.getInstance();
 
     //The projection matrix
     private final float[] projectionMatrix = new float[16];
@@ -89,9 +78,12 @@ public class Renderer implements GLSurfaceView.Renderer {
         this.screenWidth=width;
         this.screenHeight=height;
 
-        changeViewport(0,0);
+        final float aspectRatio = (float) screenWidth / (float) screenHeight;
+        dh.setAspectRatio(aspectRatio);
 
-        changeProjection(1.0f);
+        glViewport(0, 0, screenWidth, screenHeight);
+
+        updateViewport(dh.getZoom(), dh.getOffset()[0], dh.getOffset()[1]);
 
         GLES20.glClearDepthf(1f);
     }
@@ -103,22 +95,12 @@ public class Renderer implements GLSurfaceView.Renderer {
 
         //Iterate through the drawableList, cannot use enhanced with an iterator if we remove or add to list while iterating
         for (int i = 0; i < DataHolder.getInstance().getDrawableList().size(); i++) {
-            DataHolder.getInstance().getDrawableList().get(i).draw(projectionMatrix);
+            dh.getDrawableList().get(i).draw(projectionMatrix);
         }
     }
 
-    public void changeProjection(float zoom) {
-
+    public void updateViewport(float zoom, float offsetX, float offsetY) {
         //This is for setting the projection and aspect ratio
-        final float aspectRatio = (float) screenWidth / (float) screenHeight;
-        Log.d(TAG, "aspectRatio: " + aspectRatio);
-
-        orthoM(projectionMatrix, 0, -aspectRatio * zoom, aspectRatio * zoom, -zoom, zoom, -1f, 1f);
-
-        DataHolder.getInstance().setAspectRatio(aspectRatio);
-    }
-
-    public void changeViewport(int x, int y){
-        glViewport(x, y, screenWidth, screenHeight);
+        orthoM(projectionMatrix, 0, -(dh.getAspectRatio() * zoom) + offsetX, (dh.getAspectRatio() * zoom) + offsetX, -zoom - offsetY, zoom - offsetY, -1f, 1f);
     }
 }

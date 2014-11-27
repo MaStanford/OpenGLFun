@@ -81,8 +81,10 @@ public class ViewUtils {
          * Put the x,y offset here.  It will just be to - or + the offset to the ratio
          */
 
+        float ratioWithOffsetX = ratioToScreenWithAspectX + DataHolder.getInstance().getOffset()[0];
+        float ratioWithOffsetY = yRatioWithZoom + DataHolder.getInstance().getOffset()[1];
 
-        return new float[]{ratioToScreenWithAspectX,yRatioWithZoom};
+        return new float[]{ratioWithOffsetX,ratioWithOffsetY};
     }
 
     /**
