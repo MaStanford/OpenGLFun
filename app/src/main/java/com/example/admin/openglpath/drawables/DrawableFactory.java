@@ -2,7 +2,6 @@ package com.example.admin.openglpath.drawables;
 
 import com.example.admin.openglpath.data.DataHolder;
 import com.example.admin.openglpath.data.DrawableStateManager;
-import com.example.admin.openglpath.models.DrawableType;
 import com.example.admin.openglpath.models.HistoryEntry;
 
 import java.util.Random;
@@ -52,7 +51,7 @@ public class DrawableFactory {
                 //Add this action to history stack
                 dsm.addToHistoryStack(new HistoryEntry(HistoryEntry.HistoryAction.Create, newObj, null));
                 break;
-            case Line:
+            case Stroke:
                 newObj  = new StrokeLines(x, y, 1, dsm.getCurrentLineWidth(), color);
                 dsm.setCurrentSelectedDrawable(newObj);
                 dh.addDrawable(newObj);

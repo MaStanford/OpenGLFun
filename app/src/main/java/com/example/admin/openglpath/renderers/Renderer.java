@@ -5,13 +5,14 @@ import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.util.Log;
 
-import com.example.admin.openglpath.R;
 import com.example.admin.openglpath.data.DataHolder;
 import com.example.admin.openglpath.loopers.AnimationLoop;
-import com.example.admin.openglpath.models.DrawableType;
+import com.example.admin.openglpath.shaders.PointShaderProgram;
+import com.example.admin.openglpath.shaders.ShaderHelper;
+import com.example.admin.openglpath.shaders.ShaderProgram;
+import com.example.admin.openglpath.shaders.ShaderType;
+import com.example.admin.openglpath.shaders.SimpleShaderProgram;
 import com.example.admin.openglpath.util.ColorUtil;
-import com.example.admin.openglpath.util.ShaderHelper;
-import com.example.admin.openglpath.util.TextResourceReader;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -61,33 +62,12 @@ public class Renderer implements GLSurfaceView.Renderer {
         //This is where we will compile the shader for now TODO: Move this to loading screen
 
         //Logic for simple shader
-        String vertexShaderSource = TextResourceReader.readTextFileFromResource(mContext, R.raw.simple_vertex_shader);
-        String fragmentShaderSource = TextResourceReader.readTextFileFromResource(mContext, R.raw.simple_fragment_shader);
-        int vertexShader = ShaderHelper.getInstance().compileVertexShader(vertexShaderSource);
-        int fragmentShader = ShaderHelper.getInstance().compileFragmentShader(fragmentShaderSource);
-        int program = ShaderHelper.getInstance().attachShader(vertexShader, fragmentShader, DrawableType.Card);
-        ShaderHelper.getInstance().putCompiledShader(DrawableType.Card, program);
-        Log.d(TAG, "Vertex Program : " + program);
-
-
-        //Logic for shader with color vary
-        String vertexShaderSourceVary = TextResourceReader.readTextFileFromResource(mContext, R.raw.varying_vertex_shader);
-        String fragmentShaderSourceVary = TextResourceReader.readTextFileFromResource(mContext, R.raw.varying_fragment_shader);
-        int vertexShaderVary = ShaderHelper.getInstance().compileVertexShader(vertexShaderSourceVary);
-        int fragmentShaderVary = ShaderHelper.getInstance().compileFragmentShader(fragmentShaderSourceVary);
-        int programVary = ShaderHelper.getInstance().attachShader(vertexShaderVary, fragmentShaderVary, DrawableType.CardVary);
-        ShaderHelper.getInstance().putCompiledShader(DrawableType.CardVary, programVary);
-        Log.d(TAG, "VertexVary Program : " + programVary);
-
+        ShaderProgram simpleShader = new SimpleShaderProgram(mContext);
+        ShaderHelper.getInstance().putCompiledShader(ShaderType.Simple, simpleShader);
 
         //Logic for point shader
-        String vertexShaderSourcePoint = TextResourceReader.readTextFileFromResource(mContext, R.raw.point_vertex_shader);
-        String fragmentShaderSourcePoint = TextResourceReader.readTextFileFromResource(mContext, R.raw.simple_fragment_shader);
-        int vertexShaderPoint = ShaderHelper.getInstance().compileVertexShader(vertexShaderSourcePoint);
-        int fragmentShaderPoint = ShaderHelper.getInstance().compileFragmentShader(fragmentShaderSourcePoint);
-        int programPoint = ShaderHelper.getInstance().attachShader(vertexShaderPoint, fragmentShaderPoint, DrawableType.Point);
-        ShaderHelper.getInstance().putCompiledShader(DrawableType.Point, programPoint);
-        Log.d(TAG, "Vertex point Program : " + programPoint);
+        ShaderProgram pointShader = new PointShaderProgram(mContext);
+        ShaderHelper.getInstance().putCompiledShader(ShaderType.Point, pointShader);
 
 
         //Start the animation loop

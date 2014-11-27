@@ -2,17 +2,15 @@ package com.example.admin.openglpath.drawables;
 
 import android.opengl.GLES20;
 
-import com.example.admin.openglpath.models.DrawableType;
+import com.example.admin.openglpath.shaders.PointShaderProgram;
+import com.example.admin.openglpath.shaders.ShaderHelper;
+import com.example.admin.openglpath.shaders.ShaderType;
 import com.example.admin.openglpath.util.ColorUtil;
-import com.example.admin.openglpath.util.ShaderHelper;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-import static android.opengl.GLES20.glGetUniformLocation;
-import static com.example.admin.openglpath.renderers.Renderer.FRAGMENT_COLOR;
-import static com.example.admin.openglpath.renderers.Renderer.VERTEX_MATRIX;
-import static com.example.admin.openglpath.renderers.Renderer.VERTEX_POSITION;
+import static android.opengl.GLES20.glUniformMatrix4fv;
 
 /**
  * Created by Mark Stanford on 11/21/14.
@@ -21,14 +19,16 @@ public class Point extends Drawable {
 
     private static final String TAG = "Point";
 
+    PointShaderProgram mShader;
+
     public Point(float x, float y, float z, int color) {
         setXYZ(x, y, z);
 
         mColor = ColorUtil.getRGBAFromInt(color);
 
         //Get the shader for this shape and the program id where the shader is loaded
-        mShaderType = DrawableType.Card;
-        mProgram = ShaderHelper.getInstance().getCompiledShaders().get(mShaderType);
+        mShaderType = ShaderType.Point;
+        mShader = (PointShaderProgram) ShaderHelper.getInstance().getCompiledShaders().get(mShaderType);
 
         //Generating the vertices using the x,y
         generateNewVertices(this.x, this.y, this.z);
@@ -51,31 +51,25 @@ public class Point extends Drawable {
     public void draw(float[] matrix) {
 
         // Add program to OpenGL ES environment
-        GLES20.glUseProgram(mProgram);
-
-        // get handle to vertex shader's vPosition member from the shader
-        mPositionHandle = GLES20.glGetAttribLocation(mProgram, VERTEX_POSITION);
+        mShader.useProgram();
 
         // Prepare the triangle coordinate data
-        GLES20.glVertexAttribPointer(mPositionHandle, COORDS_PER_VERTEX, GLES20.GL_FLOAT, false, vertexStride, vertexBuffer);
+        GLES20.glVertexAttribPointer(mShader.getPositionHandle(), COORDS_PER_VERTEX, GLES20.GL_FLOAT, false, vertexStride, vertexBuffer);
 
         // Enable the attribute in the shader
-        GLES20.glEnableVertexAttribArray(mPositionHandle);
-
-        // get handle to fragment shader's vColor member from the shader
-        mColorHandle = GLES20.glGetUniformLocation(mProgram, FRAGMENT_COLOR);
+        GLES20.glEnableVertexAttribArray(mShader.getPositionHandle());
 
         // Set mColor for drawing the triangle
-        GLES20.glUniform4fv(mColorHandle, 1, mColor, 0);
+        GLES20.glUniform4fv(mShader.getColorHandle(), 1, mColor, 0);
 
-        //Get the handle to projection matrix
-        muMVPMatrixHandle = glGetUniformLocation(mProgram, VERTEX_MATRIX);
+        //Send the matrix to the shader
+        glUniformMatrix4fv(mShader.getMatrixHandle(), 1, false, matrix, 0);
 
         // Draw the triangle
         GLES20.glDrawArrays(GLES20.GL_POINTS, 0, (shapeCoords.length / COORDS_PER_VERTEX));
 
         // Disable vertex array
-        GLES20.glDisableVertexAttribArray(mPositionHandle);
+        GLES20.glDisableVertexAttribArray(mShader.getPositionHandle());
     }
 
     /**

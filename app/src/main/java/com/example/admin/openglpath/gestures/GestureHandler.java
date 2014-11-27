@@ -8,10 +8,10 @@ import com.example.admin.openglpath.data.DataHolder;
 import com.example.admin.openglpath.data.DrawableStateManager;
 import com.example.admin.openglpath.drawables.Drawable;
 import com.example.admin.openglpath.drawables.DrawableFactory;
+import com.example.admin.openglpath.drawables.DrawableType;
 import com.example.admin.openglpath.loopers.FlingAnimation;
-import com.example.admin.openglpath.models.DrawableType;
 import com.example.admin.openglpath.models.HistoryEntry;
-import com.example.admin.openglpath.util.ViewUtils;
+import com.example.admin.openglpath.views.ViewUtils;
 
 import java.util.Random;
 
@@ -153,7 +153,6 @@ public class GestureHandler {
         //Check to see if we have an up gesture
         if(e2.getAction() == MotionEvent.ACTION_UP) {
             Log.d(TAG, "onScroll action up == " + (e2.getAction() == MotionEvent.ACTION_UP));
-            dsm.clearCurrentSelectedDrawable();
             mLastCommand = NONE;
         }
 
@@ -193,8 +192,6 @@ public class GestureHandler {
         y = scaled[1];
         Log.d(TAG, "onFling detected: " + x + ":" + y);
 
-
-        DataHolder dh = DataHolder.getInstance();
         if(dsm.isCurrentlySelectedDrawable()){
             //We have a currently selected drawable. We need to change it's x,y;
             dsm.getCurrentSelectedDrawable().setXYZ(x, y , 1);
@@ -203,7 +200,7 @@ public class GestureHandler {
         //Check to see if we have an up gesture and then calculate the fling
         if(e2.getAction() == MotionEvent.ACTION_UP){
             //Make sure we have a drawable under our touch
-            if(dsm.isCurrentlySelectedDrawable() && mCurrentObject == CARD){
+            if(dsm.isCurrentlySelectedDrawable()){
                 //Fling the object!
                 FlingAnimation fling = new FlingAnimation(dsm.getCurrentSelectedDrawable(), x, y, velocityX, velocityY);
                 dh.getAnimationMap().put(dsm.getCurrentSelectedDrawable(), fling);
@@ -258,7 +255,7 @@ public class GestureHandler {
                     mCurrentObject = CARD;
                     break;
                 case STROKE:
-                    df.createDrawable(DrawableType.Line, x, y, 1, new Random().nextInt(Integer.MAX_VALUE));
+                    df.createDrawable(DrawableType.Stroke, x, y, 1, new Random().nextInt(Integer.MAX_VALUE));
                     mPreviouslyMadeObject = dsm.getCurrentSelectedDrawable();
                     mCurrentObject = STROKE;
                     break;

@@ -1,8 +1,9 @@
 package com.example.admin.openglpath.drawables;
 
-import com.example.admin.openglpath.models.DrawableType;
+import com.example.admin.openglpath.shaders.ShaderHelper;
+import com.example.admin.openglpath.shaders.ShaderType;
+import com.example.admin.openglpath.shaders.SimpleShaderProgram;
 import com.example.admin.openglpath.util.ColorUtil;
-import com.example.admin.openglpath.util.ShaderHelper;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -12,15 +13,9 @@ import static android.opengl.GLES20.GL_TRIANGLES;
 import static android.opengl.GLES20.glDisableVertexAttribArray;
 import static android.opengl.GLES20.glDrawArrays;
 import static android.opengl.GLES20.glEnableVertexAttribArray;
-import static android.opengl.GLES20.glGetAttribLocation;
-import static android.opengl.GLES20.glGetUniformLocation;
 import static android.opengl.GLES20.glUniform4fv;
 import static android.opengl.GLES20.glUniformMatrix4fv;
-import static android.opengl.GLES20.glUseProgram;
 import static android.opengl.GLES20.glVertexAttribPointer;
-import static com.example.admin.openglpath.renderers.Renderer.FRAGMENT_COLOR;
-import static com.example.admin.openglpath.renderers.Renderer.VERTEX_MATRIX;
-import static com.example.admin.openglpath.renderers.Renderer.VERTEX_POSITION;
 
 /**
  * Created by Mark Stanford on 11/18/14.
@@ -29,14 +24,18 @@ public class Card extends Drawable {
 
     private static final String TAG = "Card";
 
+    SimpleShaderProgram mShader;
+
     public Card(float x, float y, float z, int color) {
         setXYZ(x,y,z);
 
         mColor = ColorUtil.getRGBAFromInt(color);
 
-        //Get the shader for this shape and the program id where the shader is loaded
-        this.mShaderType = DrawableType.Card;
-        mProgram = ShaderHelper.getInstance().getCompiledShaders().get(mShaderType);
+        //Get the shader for this shape
+        this.mShaderType = ShaderType.Simple;
+
+        //Get shader program
+        this.mShader = (SimpleShaderProgram)ShaderHelper.getInstance().getCompiledShaders().get(mShaderType);
 
         //Generating the vertices using the x,y
         generateNewVertices(this.x, this.y, this.z);
@@ -49,8 +48,10 @@ public class Card extends Drawable {
 
         // create a floating point buffer from the ByteBuffer
         vertexBuffer = bb.asFloatBuffer();
+
         // add the coordinates to the FloatBuffer
         vertexBuffer.put(shapeCoords);
+
         // set the buffer to read the first coordinate
         vertexBuffer.position(0);
     }
@@ -58,35 +59,28 @@ public class Card extends Drawable {
     @Override
     public void draw(float[] matrix) {
 
-        // Add program to OpenGL ES environment
-        glUseProgram(mProgram);
-
-        // get handle to vertex shader's vPosition member from the shader
-        mPositionHandle = glGetAttribLocation(mProgram, VERTEX_POSITION);
+        //Use program
+        mShader.useProgram();
 
         // Prepare the triangle coordinate data
-        glVertexAttribPointer(mPositionHandle, COORDS_PER_VERTEX, GL_FLOAT, false, vertexStride, vertexBuffer);
+        glVertexAttribPointer(mShader.getPositionHandle(), COORDS_PER_VERTEX, GL_FLOAT, false, vertexStride, vertexBuffer);
 
         // Enable the attribute in the shader
-        glEnableVertexAttribArray(mPositionHandle);
+        glEnableVertexAttribArray(mShader.getPositionHandle());
 
-        // get handle to fragment shader's vColor member from the shader
-        mColorHandle = glGetUniformLocation(mProgram, FRAGMENT_COLOR);
 
         // Set mColor for drawing the triangle
-        glUniform4fv(mColorHandle, 1, mColor, 0);
+        glUniform4fv(mShader.getColorHandle(), 1, mColor, 0);
 
-        //Get the handle to projection matrix
-        muMVPMatrixHandle = glGetUniformLocation(mProgram, VERTEX_MATRIX);
 
         //Send the matrix to the shader
-        glUniformMatrix4fv(muMVPMatrixHandle, 1, false, matrix, 0);
+        glUniformMatrix4fv(mShader.getMatrixHandle(), 1, false, matrix, 0);
 
         // Draw the triangle
         glDrawArrays(GL_TRIANGLES, 0, (shapeCoords.length / COORDS_PER_VERTEX));
 
         // Disable vertex array
-        glDisableVertexAttribArray(mPositionHandle);
+        glDisableVertexAttribArray(mShader.getPositionHandle());
     }
 
     /**

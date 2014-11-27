@@ -1,6 +1,7 @@
 package com.example.admin.openglpath.drawables;
 
-import com.example.admin.openglpath.models.DrawableType;
+import com.example.admin.openglpath.shaders.ShaderProgram;
+import com.example.admin.openglpath.shaders.ShaderType;
 
 import java.nio.FloatBuffer;
 
@@ -14,10 +15,7 @@ public abstract class Drawable implements IDrawable{
     protected float mSize = .15f;
 
     //The shader type for this shape
-    protected DrawableType mShaderType;
-
-    //The shader program
-    protected int mProgram;
+    protected ShaderType mShaderType;
 
     //The vertex buffer to pass along to openGL
     protected FloatBuffer vertexBuffer;
@@ -31,23 +29,13 @@ public abstract class Drawable implements IDrawable{
     // Set mColor with red, green, blue and alpha (opacity) values
     protected float mColor[] = { 0.63671875f, 0.76953125f, 0.22265625f, 1.0f };
 
-    //handle to vertex shader's vPosition member
-    protected int mPositionHandle;
-
-    //handle to fragment shader's vColor member
-    protected int mColorHandle;
-
-    //The handle to the projection matrix
-    protected int muMVPMatrixHandle;
-
-    //The handle to the vertex color
-    protected int mColorVaryHandle;
-
     // number of coordinates per vertex in this array
     protected int COORDS_PER_VERTEX = 3;
 
     //How many bytes each vertext plus color takes up.
     protected int vertexStride = COORDS_PER_VERTEX * BYTES_FLOAT;
+
+    protected ShaderProgram mShader;
 
     abstract public void draw(float[] matrix);
 

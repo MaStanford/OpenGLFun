@@ -1,9 +1,7 @@
-package com.example.admin.openglpath.util;
+package com.example.admin.openglpath.shaders;
 
 import android.opengl.GLES20;
 import android.util.Log;
-
-import com.example.admin.openglpath.models.DrawableType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -43,13 +41,13 @@ public class ShaderHelper {
     }
 
     //Map of shaderTypes in the shape to the program id int
-    private Map<DrawableType, Integer> compiledShaders  =  new HashMap<DrawableType, Integer>();
+    private Map<ShaderType, ShaderProgram> compiledShaders  =  new HashMap<ShaderType, ShaderProgram>();
     ;
 
     /**
      * Links shaders into a program
      */
-    public int attachShader(int vertextShaderID, int fragmentShaderID, DrawableType type){
+    public int attachShader(int vertextShaderID, int fragmentShaderID){
 
         int mProgram = GLES20.glCreateProgram();           // create empty OpenGL ES Program
         GLES20.glAttachShader(mProgram, vertextShaderID);  // add the vertex shader to program
@@ -70,8 +68,6 @@ public class ShaderHelper {
             Log.w(TAG, "Linking of program failed.");
             return 0;
         }
-
-        putCompiledShader(type, mProgram);
 
         return mProgram;
     }
@@ -98,15 +94,25 @@ public class ShaderHelper {
         return shaderObjectId;
     }
 
-    public Map<DrawableType, Integer> getCompiledShaders() {
+    public int buildProgram(String vertexSource, String fragmentSource){
+
+        //Logic for simple shader
+        int vertexShader = ShaderHelper.getInstance().compileVertexShader(vertexSource);
+        int fragmentShader = ShaderHelper.getInstance().compileFragmentShader(fragmentSource);
+        int program = ShaderHelper.getInstance().attachShader(vertexShader, fragmentShader);
+
+        return program;
+    }
+
+    public Map<ShaderType, ShaderProgram> getCompiledShaders() {
         return compiledShaders;
     }
 
-    public void setCompiledShaders(Map<DrawableType, Integer> compiledShaders) {
+    public void setCompiledShaders(Map<ShaderType, Integer> compiledShaders) {
         compiledShaders = compiledShaders;
     }
 
-    public void putCompiledShader(DrawableType type, int program) {
+    public void putCompiledShader(ShaderType type, ShaderProgram program) {
         compiledShaders.put(type, program);
     }
 }

@@ -1,8 +1,9 @@
 package com.example.admin.openglpath.drawables;
 
-import com.example.admin.openglpath.models.DrawableType;
+import com.example.admin.openglpath.shaders.ShaderHelper;
+import com.example.admin.openglpath.shaders.ShaderType;
+import com.example.admin.openglpath.shaders.SimpleShaderProgram;
 import com.example.admin.openglpath.util.ColorUtil;
-import com.example.admin.openglpath.util.ShaderHelper;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -14,15 +15,10 @@ import static android.opengl.GLES20.GL_LINE_STRIP;
 import static android.opengl.GLES20.glDisableVertexAttribArray;
 import static android.opengl.GLES20.glDrawArrays;
 import static android.opengl.GLES20.glEnableVertexAttribArray;
-import static android.opengl.GLES20.glGetAttribLocation;
-import static android.opengl.GLES20.glGetUniformLocation;
 import static android.opengl.GLES20.glLineWidth;
 import static android.opengl.GLES20.glUniform4fv;
-import static android.opengl.GLES20.glUseProgram;
+import static android.opengl.GLES20.glUniformMatrix4fv;
 import static android.opengl.GLES20.glVertexAttribPointer;
-import static com.example.admin.openglpath.renderers.Renderer.FRAGMENT_COLOR;
-import static com.example.admin.openglpath.renderers.Renderer.VERTEX_MATRIX;
-import static com.example.admin.openglpath.renderers.Renderer.VERTEX_POSITION;
 
 /**
  * Stroke using POINTS to draw
@@ -37,6 +33,8 @@ public class StrokeLines extends Drawable{
 
     float mLineWidth = 1f;
 
+    SimpleShaderProgram mShader;
+
     public StrokeLines(float x, float y, float z, float size, int color) {
 
         strokePoints =  new ArrayList<Float>();
@@ -49,8 +47,8 @@ public class StrokeLines extends Drawable{
         mColor = ColorUtil.getRGBAFromInt(color);
 
         //Get the shader for this shape and the program id where the shader is loaded
-        mShaderType = DrawableType.Card;
-        mProgram = ShaderHelper.getInstance().getCompiledShaders().get(mShaderType);
+        mShaderType = ShaderType.Simple;
+        mShader = (SimpleShaderProgram) ShaderHelper.getInstance().getCompiledShaders().get(mShaderType);
 
         //Generating the vertices using the x,y
         generateNewVertices(this.x, this.y, this.z);
@@ -73,34 +71,28 @@ public class StrokeLines extends Drawable{
     public void draw(float[] matrix) {
 
         // Add program to OpenGL ES environment
-        glUseProgram(mProgram);
-
-        // get handle to vertex shader's vPosition member from the shader
-        mPositionHandle = glGetAttribLocation(mProgram, VERTEX_POSITION);
+        mShader.useProgram();
 
         // Prepare the triangle coordinate data
-        glVertexAttribPointer(mPositionHandle, COORDS_PER_VERTEX, GL_FLOAT, false, vertexStride, vertexBuffer);
+        glVertexAttribPointer(mShader.getPositionHandle(), COORDS_PER_VERTEX, GL_FLOAT, false, vertexStride, vertexBuffer);
 
         // Enable the attribute in the shader
-        glEnableVertexAttribArray(mPositionHandle);
-
-        // get handle to fragment shader's vColor member from the shader
-        mColorHandle = glGetUniformLocation(mProgram, FRAGMENT_COLOR);
+        glEnableVertexAttribArray(mShader.getPositionHandle());
 
         // Set mColor for drawing the triangle
-        glUniform4fv(mColorHandle, 1, mColor, 0);
-
-        //Get the handle to projection matrix
-        muMVPMatrixHandle = glGetUniformLocation(mProgram, VERTEX_MATRIX);
+        glUniform4fv(mShader.getColorHandle(), 1, mColor, 0);
 
         //Change line size
         glLineWidth(mLineWidth);
+
+        //Send the matrix to the shader
+        glUniformMatrix4fv(mShader.getMatrixHandle(), 1, false, matrix, 0);
 
         // Draw the triangle
         glDrawArrays(GL_LINE_STRIP, 0, (shapeCoords.length / COORDS_PER_VERTEX));
 
         // Disable vertex array
-        glDisableVertexAttribArray(mPositionHandle);
+        glDisableVertexAttribArray(mShader.getPositionHandle());
 
         //Revert back to default line width
         glLineWidth(1f);

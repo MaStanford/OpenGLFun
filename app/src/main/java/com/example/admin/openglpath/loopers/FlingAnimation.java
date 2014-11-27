@@ -1,8 +1,9 @@
 package com.example.admin.openglpath.loopers;
 
 import com.example.admin.openglpath.data.DataHolder;
+import com.example.admin.openglpath.drawables.Card;
 import com.example.admin.openglpath.drawables.Drawable;
-import com.example.admin.openglpath.util.ViewUtils;
+import com.example.admin.openglpath.views.ViewUtils;
 
 /**
  *
@@ -53,6 +54,8 @@ public class FlingAnimation implements Animation {
      */
     @Override
     public boolean doNext() {
+        if(!(getDrawable() instanceof Card))
+            return false;
         //Continue to fling until gravity makes velocity less than min velocity
         if(((Math.abs(velocityX) > MIN_SPEED) || (Math.abs(velocityX) > MIN_SPEED)) && doRun) {
 

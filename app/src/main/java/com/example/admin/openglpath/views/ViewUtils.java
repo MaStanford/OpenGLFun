@@ -1,4 +1,4 @@
-package com.example.admin.openglpath.util;
+package com.example.admin.openglpath.views;
 
 import android.util.Log;
 import android.view.View;
